@@ -1,0 +1,50 @@
+<div class="container-fluid">
+
+    <!-- Page Heading -->
+    <h1 class="h3 mb-2 text-gray-800">Product viwes</h1>
+    <p class="mb-4"></p>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <!-- <div class="card-header py-3"> -->
+            <!-- <h6 class="m-0 font-weight-bold text-primary"></h6> -->
+        <!-- </div> -->
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Name & Img</th>
+                            <th>Price</th>
+                            <th>Brands Name</th>
+                            <th>Category</th>
+                            <th>Quantity</th>
+                            <th>sold</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% allProduct.forEach(element=>{ %>
+                            <tr>
+                               <td class="text-left">
+                                 
+                                     <img  style="width: 50px; height: 55px"
+                                      src="/productsImg/<%= element.Image[0] %>" alt="" /> <br>
+
+                                 <span><%= element.Name %></span>
+                               </td>
+                               <td><%=element.Price%></td>
+                               <td><%=element.brand%></td>
+                               <td><%= element.Category?.name || "no category"%> </td>
+                               <td><%=element.quantity %></td>
+                               <td> <a href="/admin/productEdit/<%= element._id %>" class="btn border-shadow update">
+                                 <span class="text-gradient"><i class="fas fa-pencil-alt"></i></span>
+                             </a></td>
+                             </tr>
+                             <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,40 @@
+<%- include("../layouts/adminhead.ejs") %>
+    <div class="row">
+      <div class="col">
+      <section>
+        <section class="h-100 h-custom" style="background-color: #8fc4b7;">
+            <div class="container py-5 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-lg-8 col-xl-6">
+                  <div class="card rounded-3">
+                 
+                    <div class="card-body p-4 p-md-5">
+                      <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Add new Category </h3>
+          
+                      <form class="px-md-2"  action="/admin/editCategory/<%= category._id %>"  method="post">
+          
+                        <div class="form-outline mb-4">
+                            <label class="form-label" for="form3Example1q">Name Category</label>
+                          <input type="text" id="form3Example1q" class="form-control"  name="name" id="name" value="<%= category.name %>" required/>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <label class="form-label" for="description">Description</label>
+                          <input type="text" name="discription" class="form-control form-control-md" id="discription" value=" <%= category.discription %>" required>
+                          </div>
+                        </div>
+
+                         <button type="submit" class="btn btn-success btn-lg mb-1">Submit</button>
+                       
+                      </form>
+          
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        
+      </section>
+     
+<%- include("../layouts/adminfooter.ejs") %>

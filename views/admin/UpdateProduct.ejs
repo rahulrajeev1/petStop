@@ -1,0 +1,111 @@
+<%- include("../layouts/adminhead.ejs") %>
+
+    <section class="h-100 h-custom" style="background-color: #8fc4b7;">
+            <div class="container py-5 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-lg-8 col-xl-6">
+                  <div class="card rounded-3">
+                    <!-- <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/img3.webp"
+                      class="w-100" style="border-top-left-radius: .3rem; border-top-right-radius: .3rem;"
+                      alt="Sample photo"> -->
+                    <div class="card-body p-4 p-md-5">
+                      <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Registration Info</h3>
+          
+                      <form class="px-md-2"  action="/admin/productEdit" enctype="multipart/form-data" method="post">
+          
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Name</label>
+                          <input type="hidden" id="id" name="id" value="<%= product._id %>"/>
+                          <input type="text" id="form3Example1q" class="form-control"  name="name" id="name" value="<%=product.Name%>" required/ >
+                        </div>
+
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Category</label><br>
+                          <select class="form-select"  id="form3Example1q" class="form-control" name="Category" id="category" aria-label="Default select example">
+                            <% cateData.forEach((category) => { %>
+                              <option value="<%=category._id%>"><%= category.name %></option>
+                              <% }) %>
+                            </select>
+
+                        </div>
+
+    
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Price</label>
+                          <input type="number" id="form3Example1q" class="form-control" name="Price" value="<%=product.Price %>" id="Price" required />
+                        </div>
+          
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Brand</label>
+                          <input type="text" id="form3Example1q" class="form-control" name="brand" value=" <%=product.brand %>" required/>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Quantity</label>
+                          <input type="number" id="form3Example1q" class="form-control" name="quantity" value="<%=product.quantity %>"  min="0"  id="quantity" required/>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                          <div class="row col-md-12">
+                            <div class="col-md-6">
+                                <div class="mb-4">
+                                    <label for=""> Images to delete</label>
+                          
+                                  <div>
+                                      <% product.Image.forEach(image=> { %>
+                                          <input type="checkbox" name="imagesToDelete" value="<%= image %>">
+                                          <img src="/productsImg/<%= image %>" alt="Product Image"
+                                              style="max-width: 40px; max-height: 50px;">
+                                          <% }) %>
+                                  </div>
+                              </div>
+                            </div>
+                            <div class="col-md-6">   
+                                <label for="">Add Images</label>
+                                <input type="file" accept=".jpg, .jpeg, .png" class="form-control my-3 py-2"  name="image" multiple>
+            
+                            </div>
+                           </div>  
+                        </div>
+                          <label class="form-label" for="form3Example1q">Images</label>
+                        </div>
+
+                        <div class="form-group">
+                           
+                          <textarea class="form-control" type="text" id="exampleFormControlTextarea1"  rows="3" name="discription"   value="<%=product.discription %>" required><%=product.discription %></textarea>
+                          <label class="form-label" for="form3Example1q">Discription</label>
+                        </div>
+                      
+                       <div class="row">
+                        <div class="col-md-6 mb-4">
+        
+                          <div class="form-outline datepicker">
+                            <input type="number" class="form-control" id="exampleDatepicker1" min="2" max="9" name="rating"  value="<%=product.rating %>" required/>
+                            <label for="exampleDatepicker1" class="form-label">Rating</label>
+                          </div>
+                        
+                        </div>
+                        
+                        </div>
+                        <a href="/admin/deleteProduct/<%=product._id%>" class="btn btn-danger">Delete</a>
+
+                        <button type="submit" class="btn btn-success btn-lg mb-1">Submit</button>
+                        
+          
+                       </form>
+          
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        
+          <script>
+            console.log(subcateData.value)
+         </script>
+
+
+<%- include("../layouts/adminfooter.ejs") %>
+
+

@@ -1,0 +1,121 @@
+                <!-- Begin Page Content -->
+                <div class="container-fluid">
+
+                    <!-- Page Heading -->
+
+                    <div class="container-fluid">
+                        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+
+                            <h1 class="h3 mb-2 text-gray-800">User View</h1>
+                            <a href="/admin/addUser" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                class="fas fa-download fa-sm text-white-50"></i> New User</a>
+                        </div>
+                    </div>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>mobile</th>
+                                            <th>Start date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% userdata.forEach(element =>{%>
+                                        <tr>
+                                            <td><%=  element.name%></td>
+                                            <td><%= element.email %></td>
+                                            <td><%=  element.mobile%></td>
+                                            <td scope="col" class="TableButton align-items-center  d-flex flex-column gap-2 px-5 p-2">
+                                                <% if(element.isBlocked===false) { %>
+                                                    <form
+                                                      action="/admin/user-blocking/<%= element._id %>"
+                                                      method="post"
+                                                    >
+                                                      <button class="btn btn-success text-black" type="button"  onclick="block_user(this.form)">
+                                                        Block
+                                                      </button>
+                                                    </form>
+                                                    <% } else if(element.isBlocked===true) { %>
+                                                    <form
+                                                      action="/admin/user-unblocking/<%= element._id %>"
+                                                      method="post"
+                                                    >
+                                                      <button class="btn btn-danger text-white" type="button"  onclick="unblock_user(this.form)">
+                                                        UnBlock
+                                                      </button>
+                                                    </form>
+                                                    <% } %> 
+                                            </td>
+                                            <td scope="col" class="TableButton align-items-center  d-flex flex-column gap-2 px-5 p-2">
+                                                
+                                                    <a href="/admin/editUser/<%= element._id %>" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">edit User</a>
+                                            </td>
+                                        </tr>
+                                        <% }); %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- /.container-fluid -->
+
+            </div>
+            <!-- End of Main Content -->
+
+          
+
+        </div>
+        <!-- End of Content Wrapper -->
+
+    </div>
+    <!-- End of Page Wrapper -->
+
+    <!-- Scroll to Top Button-->
+    
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+  function block_user(form) {
+    // swal("Hello world!");
+    swal({
+      title: "Are you sure?",
+      text: "You want Block user!",
+      // icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        form.submit();
+      }
+    });
+  }
+
+  function unblock_user(form) {
+    // swal("Hello world!");
+    swal({
+      title: "Are you sure?",
+      text: "You want UnBlock user!",
+      // icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    }).then((willDelete) => {
+      if (willDelete) {
+        form.submit();
+      }
+    });
+  }
+</script>
+
+<script>
+  $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+</script>

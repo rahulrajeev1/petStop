@@ -1,0 +1,70 @@
+<%- include('../layout.ejs')%>
+<div class="container-fluid d-flex justify-content-center align-items-center " style="background-color: rgb(86, 36, 133); height: 100vh;">
+    <div class="container col-lg-4 d-flex flex-column justify-content-center align-items-center rounded-5 p-5 bg-white CardOTP">
+        <div class="d-flex align-items-center justify-content-center">
+            <img src="/assets/images/tck.png" alt="" class="img-fluid imgOTP">
+        </div>
+        <span>Enter OTP Code</span>
+        <% if (locals.msg) { %>
+            <div class="alert alert-danger text-center">
+              <strong><%= msg %> </strong>
+            </div>
+          <% } %> 
+          <% if (locals.fail) { %>
+            <div class="alert alert-danger text-center">
+              <strong><%= fail %> </strong>
+            </div>
+          <% } %> 
+          <% if (locals.entrie === 0) { %>
+
+            <form action="/otp-loginValidation" method="post" class="d-flex flex-column align-items-center">
+                <div style="display: flex;">
+                        <input class="code" type="text" placeholder="0" min="0" max="9" name="num_1" required maxlength="1">
+                        <input class="code" type="text" placeholder="0" min="0" max="9" name="num_2" required maxlength="1">
+                        <input class="code" type="text" placeholder="0" min="0" max="9" name="num_3" required maxlength="1">
+                        <input class="code" type="text" placeholder="0" min="0" max="9" name="num_4" required maxlength="1">
+                </div>
+                <button class="btn mt-2 text-white" id="otp-btn" type="submit">validate</button>
+            </form>
+            <%}else if(locals.entrie ===1){ %>
+                <form action="/otp-registerValidation" method="post" class="d-flex flex-column align-items-center">
+                    <div style="display: flex;">
+                        <input class="code" type="text" placeholder="0" min="0" max="9"  style="width: 55px;" name="num_1" required maxlength="1">
+                        <input class="code" type="text" placeholder="0" min="0" max="9" name="num_2"style="width: 50px;"" required maxlength="1">
+                        <input class="code" type="text" placeholder="0" min="0" max="9" name="num_3" style="width: 50px;" required maxlength="1">
+                        <input class="code" type="text" placeholder="0" min="0" max="9" name="num_4" style="width: 50px;"required maxlength="1">
+                    </div>
+                    <button class="btn mt-2 text-white" id="otp-btn" type="submit">validate</button>
+                </form>
+                <%} %>   
+        <span class="mt-2 fs-5" id="time"></span>
+        <div id="timer" class="OTPtext mt-2" style="display:none">Don’t get the code?<a class="text-danger text-decoration-none" href="/login">Resent</a></div>
+    </div>
+</div>
+
+<script>
+    const inputs = document.querySelectorAll('.code');
+    for (let i = 0; i < inputs.length; i++) {
+        inputs[i].addEventListener('input', function() {
+            if (this.value.length === this.maxLength) {
+                inputs[i + 1].focus();
+            }
+        });
+    }
+
+    let timeLeft = 59;
+    const Counter = document.getElementById('time');
+    const timerId = setInterval(countdown, 1000);
+
+    function countdown() {
+        const text = document.getElementById("timer");
+        if (timeLeft == -1) {
+            text.style.display = "inline-block";
+        } else {
+            Counter.innerHTML = '00 :' + " " + timeLeft;
+            timeLeft--;
+        }
+    }
+</script>
+
+<!-- <div id="timer" style="display:none">Don’t get the code?<a href="/login">Resent</a></div  
