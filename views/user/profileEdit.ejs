@@ -1,0 +1,132 @@
+<%- include("../layouts/adminhead.ejs") %>
+<body style="background-color: #8fc4b7;">
+    <div class="row">
+      <div class="col">
+      <section style="background-color: #8fc4b7;">
+        <section class="h-100 h-custom" >
+            <div class="container py-5 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                  <h3 class="d-flex justify-content-center align-items-center" >Edit Profile </h3>
+                <div class="col-lg-8 col-xl-6">
+                  <div class="card rounded-3">
+                 
+                    <div class="card-body p-4 p-md-5">
+          
+                      <form class="px-md-2" id="addressFrom" >
+          
+                        <div class="form-outline mb-4">
+                            <label class="form-label" for="form3Example1q">Name</label>
+                          <input type="text" id="form3Example1q" class="form-control"  name="name" id="name" value="<%=data.name%>" required/>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <div id="emailMessage"></div>
+                              <label class="form-label" for="description">Email</label>
+                          <input type="email" name="email" class="form-control form-control-md" id="houseName" value="<%=data.email%>" required>
+                          </div>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <label class="form-label" for="description">Mobile</label>
+                          <input type="number" name="mobile" class="form-control form-control-md" id="Phone" value="<%=data.mobile%>" required>
+                          </div>
+                        </div>
+                     
+                         <button type="submit" class="btn btn-success btn-lg mb-1">Submit</button>
+                       
+                      </form>
+          
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        
+      </section>
+
+      <script>
+         const addressPost = document.getElementById("addressFrom");
+         const phoneNO = document.getElementById("Phone")
+         const emailMessage = document.getElementById("emailMessage");
+
+
+        addressPost.addEventListener("submit", async function(e){
+            e.preventDefault();
+            if(phoneNO.value.length !== 10){
+              return  errMes.innerHTML = "not 10 digit";
+            }
+            const URL = "/proflieEdit";
+            
+            const eemail=addressPost.querySelector('[name = "email"]').value;
+
+            const formData = {
+                email:addressPost.querySelector('[name = "email"]').value,
+                name: addressPost.querySelector('[name="name"]').value,
+                mobile: addressPost.querySelector('[name="mobile"]').value
+            }
+            
+            
+            console.log(validateEmail(eemail))
+            
+            if(!validateEmail(eemail)){
+              console.log("herr");
+
+              return showDynamicAlert("enter proper email","danger",5000)
+            }
+
+              const HEADERS = {
+                  "Content-Type" :"application/json"
+              } 
+
+              try{
+                  const response = await fetch(URL,{
+                      method:"POST",
+                      headers:HEADERS,
+                      body:JSON.stringify(formData)
+                  })
+
+                  
+                  const responseData = await response.json();
+                  if(response.status === 200){
+                      location.href ="/userProfile"
+                  }else{
+                      showDynamicAlert(responseData.message,"danger",5000)
+                  }
+
+              }catch(error){
+                  console.log(error.message);
+              }
+
+              function showDynamicAlert(message,alertType = "danger",timeout =5000,targetContainerId = "emailMessage"){
+                  console.log(message)
+                  const alertDiv = document.createElement('div');
+                  alertDiv.innerHTML = `
+                      <div class="alert alert-dismissible show fade alert-${alertType}" role="alert">
+                          <button class="btn-close" type="button" data-bs-dismiss="alert" aria-label="Close"></button>
+                          <strong>${message}</strong>
+                          </div>`;
+                      const targetContainer = document.getElementById(targetContainerId);
+                      
+                      if (targetContainer) {
+                  targetContainer.appendChild(alertDiv);  
+                  setTimeout(function () {
+                    alertDiv.remove();
+                  }, timeout);
+                }
+              } 
+    })
+
+
+    const validateEmail = (email) => {
+      if (/^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/.test(email)){
+        return true;
+      }
+      return false;
+    };
+    houseName.addEventListener('input', (e)=>{
+    e.target.value = e.target.value.toLowerCase()
+  })
+      </script>
+     
+<%- include("../layouts/adminfooter.ejs") %>

@@ -3,10 +3,12 @@ const productModel = require("../model/productModel")
 require("dotenv").config();
 const twilio = require("twilio")
 const otpModel = require("../model/otpModel");
-const { render } = require("ejs");
+const { render, name, resolveInclude } = require("ejs");
 const {twilioFunction} = require("../middleware/twilio")
-const jwt = require('jsonwebtoken')
-
+const jwt = require('jsonwebtoken');
+const express = require("express");
+const orderModel = require("../model/orderModel")
+const { sendEmail } = require("../middleware/nodemailer")
 
 
 function createToken(userDetails, status){
@@ -166,10 +168,9 @@ exports.login_post = async(req,res)=>{
 exports.getSingleProductview = async(req,res)=>{
     try {
         const productId = req.params.id;
-        console.log(req.params.id)
         const product = await productModel.findOne({_id:productId})
-        console.log(product);
-        res.render("user/singleProduct",{product})
+        const logined = req.userDetails; 
+        res.render("user/singleProduct",{product,logined})
     } catch (error) {
         console.log(error.message)
     }
@@ -189,20 +190,26 @@ exports.cart_get = async(req,res)=>{
     try {
         if(req.userDetails){ 
             const user = await userModel.findOne({_id:req.userDetails._id });
-            console.log(req.userDetails._id +"inside get cart");
             const name = user.name;
             const cartItems = user.cart.items
             const cartCount = cartItems.length;
             const cartProductIds = cartItems.map(item => item.productId)  // return all product ids in items
             const cartProducts = await productModel.find({ _id : { $in: cartProductIds } }) // return all products only inside the cart
-            const productPrice  = cartItems.reduce((total,element) =>total + (element.quantity * element.price), 0 );  // take single product total price 
-            console.log(cartCount)
-            let totalPrice  =0 ;
+            const productPrice  = cartItems.reduce((total,element) => total + (element.quantity * element.price), 0 );  // take single product total price 
+            let totalPrice  = 0 ;
+            const cartPro = [... cartProducts]
+            cartPro.forEach((obj) =>{            
+                    for(let cart of cartItems){ 
+                        if(obj._id.toString() === cart.productId.toString()){
+                            obj.stoke = cart.quantity;    
+                        }
+                    }                
+            })   
+           
             for(let item of cartItems){
                 totalPrice += (item.quantity * item.realPrice);
             }
-            console.log(cartProducts)
-            res.render("user/cartPage",{cartProducts,totalPrice})
+            res.render("user/cartPage",{cartPro,totalPrice,cartItems})
         }else{
             res.redirect("/login");
         } 
@@ -210,6 +217,43 @@ exports.cart_get = async(req,res)=>{
         console.log(error.message)
     }
 } 
+
+
+exports.singleProductBuy = async (req,res)=>{
+    try {
+        const id = req.params.id;
+        console.log("id is"+ id);
+        const userData = await userModel.findOne({_id:req.userDetails._id});
+        const cartItems = userData.cart.items;
+        const quantity = req.body.quantity;
+        const existingCartItems = cartItems.find((item)=> item.productId.toString() === id);
+        
+        const product = await productModel.findOne({_id:id});
+        const productPrice = product.Price;
+        
+        if(existingCartItems){
+            existingCartItems.quantity += 1;
+            existingCartItems.realPrice = existingCartItems.quantity * productPrice;
+            console.log( existingCartItems.price)
+        }else{
+            const newCartItem = {
+                productId :id,
+                quantity:quantity,
+                realPrice:productPrice,
+                offer:product.Price
+            }
+            userData.cart.items.push(newCartItem);
+        }
+    
+        await userData.save();
+        res.json('successfully  ur product')
+
+    } catch (error) {
+
+        console.log(error.message)
+    }
+   
+}
 
 exports.addToCart_post= async (req,res)=>{
     try {
@@ -220,22 +264,22 @@ exports.addToCart_post= async (req,res)=>{
         
         const product = await productModel.findOne({_id:id});
         const productPrice = product.Price;
-    
+        
         if(existingCartItems){
             existingCartItems.quantity += 1;
-            existingCartItems.Price = existingCartItems.quantity * productPrice;
+            existingCartItems.realPrice = existingCartItems.quantity * productPrice;
+            console.log( existingCartItems.price)
         }else{
             const newCartItem = {
                 productId :id,
                 quantity:1,
-                realPrice:product.Price,
+                realPrice:productPrice,
                 offer:product.Price
             }
             userData.cart.items.push(newCartItem);
         }
     
         await userData.save();
-        console.log(userData);
         res.json('successfully  cart ur product')
 
     } catch (error) {
@@ -259,10 +303,153 @@ exports.removeCart = async(req,res)=>{
     }
 }
 
+exports.updateCart = async (req,res) =>{
+    const user = await userModel.findOne({_id:req.userDetails._id});
+    const cartItems = user.cart.items;
+    const products = req.body;
+    const cartProductIds = cartItems.map(item => item.productId.toString());    
+    for(let value of cartItems){
+        for(let pro of products){
+            if(new String(value.productId).trim() === new String(pro.productId).trim()){
+                console.log("insid")
+                value.quantity = pro.productQuantity
+            }
+        }
+    }
+    await user.save();
+    console.log(cartItems);
+    res.status(200).json({message:"it working fine"})
+}
+
+exports.checkOutPage = async(req,res)=>{
+    try{
+        const userData = await userModel.findOne({_id:req.userDetails._id});
+        const address = userData.address;
+        const cartItems = userData.cart.items
+        const cartProductIds = cartItems.map(item => item.productId)  // return all product ids in items
+        const cartProducts = await productModel.find({ _id : { $in: cartProductIds } }) // return all products only inside the cart
+       
+        let totalPrice  = 0 ;
+        
+        for(let item of cartItems){
+            totalPrice += (item.quantity * item.realPrice);
+        }
+        res.render("user/checkOutPage",{address,totalPrice})
+    }catch(error){
+        console.log(error.message)
+    }
+}
+
+exports.resetPassword = async(req,res)=>{
+    try {
+        if(req.body.entrie === "true"){
+
+            const randome = Math.floor(Math.random()*9000) +1000;
+            const newOtp = await otpModel.create({
+                number:randome,
+            })
+            await newOtp.save();
+            sendEmail(newOtp);
+            console.log(newOtp);
+            const entrie = 2;
+            req.body.entrie = "false";
+        res.render("user/validation",{entrie});
+        }else{
+            res.redirect("/userProfile");
+        }
+
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+exports.resetPasswordOtp = async(req,res)=>{
+    try {
+        const num1 = req.body.num_1;
+        const num2 = req.body.num_2;
+        const num3 = req.body.num_3;
+        const num4 = req.body.num_4;
+        const code = parseInt( num1 + num2 + num3 + num4 );
+        const foundOtp = await otpModel.findOneAndDelete({number:code});
+        console.log(code);
+        if(code == foundOtp.number){
+            res.render("user/reSetPassword")
+        }else{
+            res.redirect("/userProfile");
+        }
+    } catch (error) {
+        
+    }
+}
+
+exports.settingPasswordPost = async(req,res)=>{
+    try {
+        if(req.body.enter){
+            const user = await userModel.findOne({_id:req.userDetails._id});
+            const password = req.body.password
+            user.password = password;
+            await user.save()
+            req.body.enter = false;
+            res.redirect("/userProfile");
+        }else{
+            res.redirect("/userProfile")
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+
+
+exports.profilePageGet = async(req,res)=>{
+    try {
+        const userData = await userModel.findOne({_id:req.userDetails._id});
+        
+        const address = userData.address;
+        res.render("user/setting",{userData,address})
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+exports.updateProfileGet = async (req,res)=>{
+    try {
+        const data = await userModel.findOne({_id:req.userDetails._id});
+        res.render("user/profileEdit",{data})
+    } catch (error) {
+        
+    }
+}
+
+exports.updateProfilePost = async (req,res)=>{
+    try {
+        const email = req.body.email;
+        const mobile = req.body.mobile;
+        const Name = req.body.name;
+        console.log(req.body);
+        const user = await userModel.find({email:email});
+        console.log(user)
+        if(user.length > 0) return res.status(302).json({message: "email is already exists"})
+        await userModel.findByIdAndUpdate({_id:req.userDetails._id},{
+            $set:{ 
+                email:email,
+                name:Name,
+                mobile:mobile,
+            }
+        })
+        
+        res.status(200).json({message:"all good "})
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
 exports.addNewAddress = async(req,res)=>{
     try {
         const userId = req.userDetails._id;
         const newAddress = req.body;  // assuming the new address data is sent in the request body
+
         const user = await userModel.findOne({_id:userId})
         user.address.push(newAddress);
         await user.save()
@@ -272,3 +459,168 @@ exports.addNewAddress = async(req,res)=>{
         console.log(error.message)
     }
 }
+
+
+exports.editAddress = async(req,res) =>{
+    try {
+        const userData = await userModel.findOne({_id:req.userDetails._id});
+        const addressId = req.params.id;
+        const address = userData.address.find((data) => data._id.toString() === addressId);
+        res.render("user/editAddress",{address});
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+exports.editAddress_Post = async(req,res) => {
+    try {
+        const userData = await userModel.findOne({_id:req.userDetails._id});
+        const addressId = req.params.id;
+        const address = userData.address.find((data)=> data._id.toString() ===  addressId);
+        address.name = req.body.name;
+        address.city = req.body.city;
+        address.houseName = req.body.houseName;
+        address.state = req.body.state;
+        address.postalCode = req.body.postalCode;
+        address.street = req.body.street;
+        address.phone = req.body.phone;
+
+        await userData.save()
+        res.redirect("/userProfile")
+
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+
+
+exports.orderPost = async(req,res)=>{
+    try{
+        const currentDate = new Date();
+        const user = await userModel.findOne({_id:req.userDetails._id});
+        const cartItems = user.cart.items;
+        const cartProductIds = cartItems.map(item => item.productId.toString());
+        const cartProducts = await productModel.find({_id : { $in : cartProductIds}});
+        const amount = req.body.amount;
+        const method = req.body.method;
+        const addressId = req.body.address;
+        const productData = cartProducts.map(product =>({
+            name:product.Name,
+            realPrice:product.Price,
+            price:amount,
+            description:product.discription,
+            image:product.Image,
+            category:product.Category,
+            quantity:product.quantity
+        }));
+        const deliveryDate = new Date();
+        deliveryDate.setDate(currentDate.getDate() + 5);
+        const orderProduct = new orderModel( {
+            userId:req.userDetails._id,
+            address:addressId,
+            products:productData,
+            payment:{
+                method:method,
+                amount:amount,
+            },
+            proCartDetail: cartProducts,
+            cartProduct: cartItems,
+            expectedDelivery: deliveryDate
+        } )
+          if(method === "COD"){
+            await orderProduct.save()
+            for(let values of cartItems){
+                for(let product of cartProducts){
+                    if(new String(values.productId).trim() === new String(product._id).trim()){
+                        if(product.quantity == 0) return res.status(300).send({message:"out of stoke"})
+                        product.quantity = product.quantity - values.quantity;
+                        await product.save();
+                    }
+                }
+            }
+            user.cart.items = [];
+            await user.save();
+            res.send("it ok");
+          }  
+    }catch(error){
+        console.log(error.message)
+    }
+}
+
+exports.orderPageView = async (req,res)=>{
+    try {
+        const email = await userModel.findOne({_id:req.userDetails._id});
+        const order = await orderModel.find({ userId:req.userDetails._id , orderReturnRequest: false, orderCancleRequest: false, status: { $ne: 'Deliverd' } }).sort({ _id: -1 });
+        const orderHist = await orderModel.find({userId: req.userDetails._id,$or: [{ orderCancleRequest: true },{ status: 'Deliverd' }], orderReturnRequest: false, }).sort({ _id: -1 });
+        const orderProduct = orderHist.map(data => data.products)
+        
+        const orderHistStatus = orderHist.map(data => data.orderCancleRequest);
+        const orderHista = orderHist.map(data => data.status);
+        
+        const product = order.map(data => data.products);
+        
+        const newProduct = product.flat();
+        const status = order.map(data => data.status);
+        const orderstatus = order.map(data => data.orderCancleRequest);
+        const Date = order.map(data => data.expectedDelivery.toLocaleDateString());
+
+       
+       res.render("user/orders",{newProduct,order,Date, 
+        orderHist,
+        orderProduct,
+        orderHistStatus,
+        orderHista, }) 
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+exports.orderStatus = async (req, res) => {
+    try {
+        
+        const userDetails = await userModel.findOne({_id:req.userDetails._id });
+        const cart = userDetails.cart.items;
+        const cartCount = cart.length;
+        const orderId = req.params.id;
+        const order = await orderModel.find({ _id: orderId });
+        const orderProducts = order.map(items => items.proCartDetail).flat();
+        const cartProducts = order.map(items => items.cartProduct).flat();
+        for (let i = 0; i < orderProducts.length; i++) {
+            const orderProductId = orderProducts[i]._id;
+            const matchingCartProduct = cartProducts.find(cartProduct => cartProduct.productId.toString() === orderProductId.toString());
+
+            if (matchingCartProduct) {
+                orderProducts[i].cartProduct = matchingCartProduct;
+            }
+        }
+        const address = userDetails.address.find(items => items._id.toString() == order.map(items => items.address).toString());
+        const subTotal = cartProducts.reduce((totals, items) => totals + items.realPrice, 0);
+        const [orderCanceld] = order.map(item => item.orderCancleRequest);
+        const orderStatus = order.map(item => item.status);
+        res.render("user/orderstatus", { title: "Product view", cartCount, order, orderProducts, subTotal, address, orderCanceld, orderStatus })
+    } catch (error) {
+        console.log(error)
+        const message = error.message
+        res.render('404-error',{error,message})
+
+    }
+}
+
+exports.orderCancel = async (req,res)=>{
+try {
+    const id  = req.params.id
+    await orderModel.findByIdAndUpdate({_id:id},{
+        $set: {
+            orderCancleRequest: true
+        }
+    })
+    res.redirect("/orderPage")
+} catch (error) {
+    
+}
+}
+

@@ -15,11 +15,11 @@
               <strong><%= fail %> </strong>
             </div>
           <% } %> 
-          <% if (locals.entrie === 0) { %>
+          <% if (locals.entrie === 2) { %>
 
-            <form action="/otp-loginValidation" method="post" class="d-flex flex-column align-items-center">
+            <form action="/otp-resetPassword" method="post" class="d-flex flex-column align-items-center">
                 <div style="display: flex;">
-                        <input class="code" type="text" placeholder="0" min="0" max="9" name="num_1" required maxlength="1">
+                        <input class="code" type="text" placeholder="0" min="0" max="9" style="width: 55px;" name="num_1" required maxlength="1">
                         <input class="code" type="text" placeholder="0" min="0" max="9" name="num_2" required maxlength="1">
                         <input class="code" type="text" placeholder="0" min="0" max="9" name="num_3" required maxlength="1">
                         <input class="code" type="text" placeholder="0" min="0" max="9" name="num_4" required maxlength="1">

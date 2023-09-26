@@ -1,4 +1,4 @@
-<%- include(../layouts/userheader) %>
+<%- include("../layouts/adminhead.ejs") %>
 
 <div id="wrapper">
 
@@ -18,97 +18,173 @@
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item active">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link" href="/userProfile">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span></a>
+                <span>user profile</span></a>
         </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider">
 
-        <!-- Heading -->
-        <!-- <div class="sidebar-heading">
-            Inte
-        </div> -->
+        
 
-        <!-- Nav Item - Pages Collapse Menu -->
         <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
-                aria-expanded="true" aria-controls="collapseTwo">
-                <i class="fas fa-fw fa-cog"></i>
-                <span>Users</span>
-            </a>
-            <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Customer </h6>
-                    <a class="collapse-item" href="/admin/userView">New Customer  </a>
-                    <!-- <a class="collapse-item" href="#">all Customer</a> -->
-                </div>
-            </div>
-        </li>
-
-        <!-- Nav Item - Utilities Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-                aria-expanded="true" aria-controls="collapseUtilities">
-                <i class="fas fa-fw fa-wrench"></i>
-                <span>Products</span>
-            </a>
-            <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-                data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Custom </h6>
-                    <a class="collapse-item" href="/admin/addProduct">Add Products</a>
-                    <!-- <a class="collapse-item" href="#">Ordered products</a> -->
-                    <a class="collapse-item" href="/admin/productView">Products details</details> </a>
-                </div>
-            </div>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        <!-- Heading -->
-        <div class="sidebar-heading">
-            Addons
-        </div>
-
-        <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-                aria-expanded="true" aria-controls="collapsePages">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Categorys</span>
-            </a>
-            <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Login Screens:</h6>
-                    <!-- <a class="collapse-item" href="/admin/category">Add Cetegory</a> -->
-                    <a class="collapse-item" href="/admin/category">View all Category</a>
-
-            </div>
-        </li>
-
-        <!-- Nav Item - Charts -->
-
-        <!-- Nav Item - Tables -->
-        <li class="nav-item">
-            <a class="nav-link" href="tables.html">
+            <a class="nav-link" href="/orderPage">
                 <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
+                <span>orders</span></a>
         </li>
 
         <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
 
-        <!-- Sidebar Toggler (Sidebar) -->
-    <!-- Sidebar Toggler (Sidebar) -->
    
     </ul>
     <!-- End of Sidebar -->
 
-    <div id="content-wrapper" class="d-flex flex-column">
-        
+    <div id="content-wrapper" class="d-flex flex-column my-4">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="container p-4">
+                    <div class="row">
+                        <dt class="col-3">Name:</dt>
+                        <dd class="col-9"><%= userData.name %></dd>
+            
+                        <dt class="col-3">Email:</dt>
+                        <dd class="col-9"><%= userData.email %></dd>
+            
+                        <dt class="col-3">Phone no:</dt>
+                        <dd class="col-9"><%= userData.mobile%></dd>
+                        <div class=" my-4 d-sm-flex justify-content-between align-items-center">
+                            <div class="px-3 py-3 ">
+                                <form action="/resetpassword" method="post">
+                                    <input type="hidden" name="entrie" value="true" id="">
+                                <button type="submit" class="d-none d-sm-inline-block btn btn-sm btn-primary "><i
+                                    class="fas fa-download fa-sm text-white-50"></i>change Password</button>
+                                </form>
+                            </div>
+                            <div class="px-3 py-3">
+                                <a href="/proflieEdit" class="d-none d-sm-inline-block btn btn-sm btn-primary "><i
+                                    class="fas fa-download fa-sm text-white-50"></i> Edit profile</a>
+                            </div>
+                        </div>
+                    
+                        <div class="mt-3">
+                            <dt> Address :</dt>
+                            <% address.forEach((element)=>{ %>
+                            <div class="shadow my-4 d-sm-flex justify-content-between align-items-center">
+                                <div class="px-3 py-3 ">
+
+                                    <%= element.name %> , 
+                                    <%= element.houseName %> , 
+                                    <%= element.street %> 
+                                    , <%= element.city %> 
+                                    , <%= element.state %> 
+                                     , <%= element.phone %> 
+                                    , <%= element.postalCode %> 
+                                </div>
+                                <div class="px-3 py-3">
+                                    <a href="/editAddress/<%=element._id%>" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
+                                        class="fas fa-download fa-sm text-white-50"></i>  edit</a>
+                                </div>
+                            </div>
+                            <% }) %>
+                            <div class=" pt-1 d-flex justify-content-center">
+                                <button type="button" class="btn btn-primary text-center" data-toggle="modal" id="addButton" data-target="#myModal">
+                                    ADD
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                        <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                            <h4 class="modal-title" id="myModalLabel">Add Address</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            </div>
+                            <div class="modal-body">
+                            <!-- Your form fields for address properties go here -->
+                            <form id="addressFrom" method="post">
+                                <div class="form-group">
+                                <label for="name">Name:</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                </div>
+                                <div class="form-group">
+                                <label for="houseName">House Name:</label>
+                                <input type="text" class="form-control" id="houseName" name="houseName" required>
+                                </div>
+                                
+                                <div class="form-group">
+                                <label for="houseName">street:</label>
+                                <input type="text" class="form-control" id="street" name="street" required>
+                                </div>
+                                <div class="form-group">
+                                <label for="houseName">City:</label>
+                                <input type="text" class="form-control" id="city" name="city" required>
+                                </div>
+                                <div class="form-group">
+                                <label for="houseName">state:</label>
+                                <input type="text" class="form-control" id="state" name="state" required>
+                                </div>
+                                <div class="form-group">
+                                    <div class="secondary"> <span id="error" ></span></div>
+                                <label for="houseName">Phone:</label>
+                                <input type="number" class="form-control" id="phoneAddress"  name="phone" required>
+                                </div>
+
+                                <div class="form-group">
+                                <label for="houseName">PostalCode:</label>
+                                <input type="number" class="form-control" id="postalCode" name="postalCode" required>
+                                </div>
+                                <input type="submit" class="btn btn-primary" value="Submit" />
+                                <!-- Add more fields for other properties -->
+                            </form>
+                            </div>
+                            <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
+                            
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <!-- modal closed -->
+                </div>
+            </div>
+        </div>
+
     </div>
 
+   
 </div>
+
+
+
+<script>
+    const phoneNO = document.getElementById("phoneAddress")
+    const errMes = document.getElementById("error")
+    document.getElementById("addButton").addEventListener("click", function() {
+      $('#myModal').modal('show');
+    });
+    const addressPost = document.getElementById("addressFrom");
+    addressPost.addEventListener("submit",function(e){
+        e.preventDefault();
+        console.log(phoneNO.value.length )
+        if(phoneNO.value.length !== 10){
+            errMes.innerHTML = "not 10 digit";
+        }
+
+        addressPost.action ="/addAddress"
+                addressPost.method="post"
+                addressPost.submit();
+
+    
+    })
+  </script>
+
+
+<%- include("../layouts/profilefooter.ejs") %>

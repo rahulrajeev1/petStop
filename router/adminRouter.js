@@ -33,5 +33,9 @@ router.get("/editUser/:id",authenticateAdmin,adminController.editUser_get)
 router.post("/editUser/:id",adminController.editUser_post)
 router.post("/searchUser",adminController.userSearch)
 
+
+router.get("/order",adminController.orderList)
+router.post("/orderInformartion",adminController.orderDetails)
+
 module.exports = router;
 

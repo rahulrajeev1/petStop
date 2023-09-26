@@ -1,0 +1,252 @@
+<%- include("../layouts/adminhead.ejs") %>
+
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <!-- Sidebar - Brand -->
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+            <div class="sidebar-brand-icon rotate-n-15">
+                <i class="fas fa-laugh-wink"></i>
+            </div>
+            <div class="sidebar-brand-text mx-3">Pet Stop </div>
+        </a>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+
+        <!-- Nav Item - Dashboard -->
+        <li class="nav-item active">
+            <a class="nav-link" href="/userProfile">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>user profile</span></a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        
+
+        <li class="nav-item">
+            <a class="nav-link" href="">
+                <i class="fas fa-fw fa-table"></i>
+                <span>orders</span></a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider d-none d-md-block">
+
+   
+    </ul>
+    <!-- End of Sidebar -->
+
+    <div id="content-wrapper" class="d-flex flex-column my-4">
+       <% if(newProduct.length>0){%>
+            <div class="Cart_list">
+                <div class="px-2">
+                    <table style="width:100%;">
+                        <thead class="cartTop" style="position:sticky; top: 0; z-index: 1;">
+                            <tr class="cart_table">
+                                <th class="first p-3 px-4"><span>ID</span></th>
+                                <th class="p-3"><span>Product</span></th>
+                                <th class="p-3"><span>Status</span></th>
+                                <th class="p-3"><span>No.of Orders</span></th>
+                                <th class="p-3"><span>Price</span></th>
+                                <th class="p-3"><span>Expected Date</span></th>
+                                <th class="third p-3"><span>Order</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% order.forEach((data,index)=>{ %>
+                                <tr class="mt-2">
+                                    <th scope="col" class="px-4"
+                                        style="font-size: 13px; color:#959595">
+                                        <%= index+1 %>
+                                    </th>
+                                    <th scope="col " class="t_Image px-3"
+                                        style="width: 40px; height: 20px;">
+                                        <img src="/productsImg/<%= data.products[0].image[0]%>"
+                                            alt="" width="60px">
+                                    </th>
+                                    <td scope="col" class="px-3">
+                                        <%if(data.status == "Processing"){%>
+                                        <span class=" badge rounded-pill bg-warning">
+                                            <%= data.status%>
+                                        </span>
+                                        <%}else{%>
+                                            <span class=" badge rounded-pill bg-info">
+                                                <%= data.status%>
+                                            </span>
+                                        <%}%>
+                                    </td>
+                                    <td scope="col" class="tablefont px-5">
+                                        <span class="couponListFont" style="color:#959595">
+                                            <%= data.products.length%>
+                                            
+                                        </span>
+                                    </td>
+                                    <td scope="col" class="px-3">
+                                        <span class="couponListFont"
+                                            style="color:#959595">₹<span>&nbsp;</span>
+                                            <%= data.products.reduce((sum, item) => sum + parseInt(item.realPrice), 0) %>
+                                        </span>
+                                    </td>
+                                    <td scope="col" class="px-3">
+                                        <span class="couponListFont fw-bold"
+                                            style="font-size: 14px;color:#959595">
+                                            <%= Date[index]%>
+                                        </span>
+                                    </td>
+                                    <td scope="col"
+                                        class="TableButton d-flex align-items-center py-5 d-flex flex-column gap-2">
+                                        <form action="/orderStatus/<%=data._id%>" method="post" onsubmit="return ">
+                                            <button class="btn btn-success text" style="font-size: 11px;"type="submit">
+                                                View
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                <%})%>
+                        </tbody>
+                        
+                    </table>
+                </div>
+            </div>
+            <%}%>
+
+
+    <div class="p-3">
+        <h5 class=" fw-bold">Order History</h5>
+    </div>
+    <div class="container  p-2 m-0 mb-2">
+        <%if(orderHist.length>0){%>
+            <div class="Cart_list">
+                <div class="px-2">
+                    <table style="width:100%;">
+                        <thead class="cartTop" style="position:sticky; top: 0; z-index: 1;">
+                            <tr class="cart_table">
+                                <th class="first p-3 px-4"><span>ID</span></th>
+                                <th class="p-3"><span>Product</span></th>
+                                <th class="p-3"><span>Status</span></th>
+                                <th class="p-3"><span>Quantity</span></th>
+                                <th class="p-3"><span>Price</span></th>
+                                <th class="third p-3"><span>Return Availability</span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orderHist.forEach((data,index)=>{%>
+                                <tr class="cardList">
+                                    <td class="py-3 p-4" style="font-size: 13px; color:#959595">
+                                        <%= index+1 %>
+                                    </td>
+                                    <td class=" py-3 d-flex align-items-center">
+                                        <% if(data.orderCancleRequest===true){%>
+                                            <a href="/profile/orderView?id=<%=data._id%>"
+                                                class="order-cancel-link container d-flex align-items-center text-decoration-none text-dark"
+                                                data-order-id="<%= orderHistStatus[index]._id %>">
+                                                <div class="p-0" style="position: relative;">
+                                                    <h3 class="text-white bg-danger p-1 "
+                                                        style="position: absolute; font-size: 7.4px;  border-radius: 4px;">
+                                                        Order Canceled
+                                                    </h3>
+                                                    <img src="/productsImg/<%=data.products[0].image[0]%>"
+                                                        alt="" class="img-fluid" width="60px"
+                                                        style="border-radius: 5px;">
+                                                </div>
+                                            </a>
+                                    <td class="py-3 p-4" style="font-size: 13px; color:#959595">
+                                        <h6 for="" ><span class="badge rounded-pill bg-danger">Order Canceled</span></h6>
+                                    </td>
+                                    <%} else{%>
+                                        <a href="/profile/orderView?id=<%=data._id%>" class="order-cancel-link container d-flex align-items-center text-decoration-none text-dark">
+                                            <img src="/productsImg/<%=data.products[0].image[0]%>"alt="" class="img-fluid" width="60px"
+                                                style="border-radius: 5px;">
+                                        </a>
+                                        <span></span>
+                                        </td>
+                                        <td class="py-3 p-4" style="font-size: 13px; color:#959595">
+                                            <h6 for="" class="">
+                                                <%if(data.status == "Deliverd"){%>
+                                                <span class="badge rounded-pill bg-success">
+                                                    <%= data.status %>
+                                                </span>
+                                                <%}else{%>
+                                                    <span class="badge rounded-pill bg-danger">
+                                                        <%= data.status %>
+                                                    </span>
+                                                <%}%>
+                                            </h6>
+                                        </td>
+                                    <%}%>
+                                        <td class="py-3 p-4"style="font-size: 13px; color:#959595">
+                                            <h6 for="" class="">
+                                                <span>
+                                                    <%= data.products.length %>
+                                                </span>
+                                            </h6>
+                                        </td>
+                                        <td class="py-3 p-4"style="font-size: 13px; color:#959595">
+                                            <h6 for="" class="">₹
+                                                <span>
+                                                    <%=data.payment.amount%>
+                                                </span>
+                                            </h6>
+                                        </td>
+                                    <%if(data.orderCancleRequest===false){%>
+                                        <td class="py-3 p-4"style="font-size: 13px; color:#959595">
+                                            <h6 for="" class=""></h6>
+                                            <form action="/profile/orderReturn/<%=data._id%>" method="post">
+                                                <button class="btn btn-success" style="font-size: 13px;">
+                                                    Return
+                                                </button>
+                                            </form>
+                                        </td>
+                                    <%}else{%>
+                                        <td class="py-3 p-4"style="font-size: 13px; color:#959595">
+                                            <h6 for="" class=""></h6>
+                                            <button class="btn btn-danger"style="font-size: 13px;">
+                                              NoReturn
+                                            </button>
+                                        </td>
+                                    <%}%>
+                                </tr>
+                            <%})%>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <%}%>
+    </div>
+    </div>
+
+
+
+</div>
+
+
+
+<script>
+    const phoneNO = document.getElementById("phoneAddress")
+    const errMes = document.getElementById("error")
+    document.getElementById("addButton").addEventListener("click", function() {
+      $('#myModal').modal('show');
+    });
+    const addressPost = document.getElementById("addressFrom");
+    addressPost.addEventListener("submit",function(e){
+        e.preventDefault();
+        console.log(phoneNO.value.length )
+        if(phoneNO.value.length !== 10){
+            errMes.innerHTML = "not 10 digit";
+        }
+
+        addressPost.action ="/addAddress"
+                addressPost.method="post"
+                addressPost.submit();
+
+    
+    })
+  </script>
+
+
+<%- include("../layouts/profilefooter.ejs") %>

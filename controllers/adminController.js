@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const { resolve } = require("path");
 const userModel = require("../model/userModel");
 const { CompositionContextImpl } = require("twilio/lib/rest/video/v1/composition");
+const orderModel = require("../model/orderModel");
 
 
 
@@ -219,9 +220,17 @@ exports.get_addCategory  = async(req,res)=>{
 exports.post_addCategory = async(req,res)=>{
 
     try {
+        const category = req.body.name;
+        const checking =  category.replace(/[^a-zA-Z0-9 ]/g, "")
 
-        const exsist = await CategoryModel.findOne({name:req.body.name})
-        console.log(exsist)
+        const exsist = await categoryModel.findOne({
+            $or: [
+                { name: { $regex: new RegExp( checking, "i") }},
+              ]
+        })
+
+        // const exsist = await CategoryModel.findOne({name:req.body.name})
+        
         if(exsist) {
             res.status(200).render("admin/addCategory",{message:"it is already exists"})
         }else{
@@ -249,10 +258,15 @@ exports.get_editCategory = async(req,res)=>{
 exports.post_editCategory = async(req,res)=>{
     try{
         const categoryId =req.params.id;
-        
-        const sameCategory = await CategoryModel.find({name:req.body.name})
+        const search = req.body.name;
+        const categorydata = search.replace(/[^a-zA-Z0-9 ]/g, "")
+        const sameCategory = await categoryModel.findOne({
+            $or: [
+                { name: { $regex: new RegExp( categorydata, "i") }},
+              ]
+        })
 
-        if(sameCategory.length > 0){
+        if(sameCategory){
             const category = await categoryModel.find()
 
             res.render("admin/categoryView",{category,message:"it category already exists"});
@@ -396,3 +410,53 @@ exports.userSearch = async(req,res)=>{
     }
 }
 
+// order details
+
+exports.orderList = async (req,res)=>{
+    try {
+        const orderList = await orderModel.find();
+        const user = orderList.map(item => item.userId )
+        const userData = await userModel.find({_id:{ $in: user }});
+        const orderWithData = orderList.map( order =>{
+            const user = userData.find(user => user._id.toString() === order.userId.toString());
+            return {
+                ...order.toObject(),
+                user:user
+            }
+        } )
+        console.log(orderWithData);
+        const ordersWithDataSorted = orderWithData.sort((a, b) => b.createdAt - a.createdAt);
+
+        res.render('admin/orderdetails', { orderList: ordersWithDataSorted })
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+exports.orderDetails = async (req, res) => {
+    try {
+        const admin = false;
+        const userId = req.body.userId;
+        const orderId = req.body.orderId;
+        const userDetails = await userModel.findOne({ _id: userId });
+        const order = await orderModel.find({ _id: orderId });
+        const orderProducts = order.map(items => items.proCartDetail).flat();
+        const cartProducts = order.map(items => items.cartProduct).flat();
+        for (let i = 0; i < orderProducts.length; i++) {
+            const orderProductId = orderProducts[i]._id;
+            const matchingCartProduct = cartProducts.find(cartProduct => cartProduct.productId.toString() === orderProductId.toString());
+
+            if (matchingCartProduct) {
+                orderProducts[i].cartProduct = matchingCartProduct;
+            }
+        }
+        const address = userDetails.address.find(items => items._id.toString() == order.map(items => items.address).toString());
+        const subTotal = cartProducts.reduce((totals, items) => totals + items.price, 0);
+        const [orderCanceld] = order.map(item => item.orderCancleRequest);
+        const orderStatus = order.map(item => item.status);
+        res.render("admin/orderInformation", {  order, orderProducts, subTotal, address, orderCanceld, orderStatus, userDetails });
+    } catch (error) {
+        console.log(error + "orderdetailing error")
+    }
+}

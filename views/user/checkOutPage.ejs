@@ -1,0 +1,259 @@
+<!-- <- include("../layout.ejs")%> -->
+<%- include("../layouts/userHeader") %>
+<%- include("../layouts/navLogined.ejs") %>
+
+
+  
+  <!-- cart + summary -->
+  <section class="bg-light my-5">
+    <div class="container">
+      <div class="row">
+        <!-- cart -->
+        <div class="col-lg-9">
+          <div class="card border shadow-0">
+            <div class="m-4">
+              <h4 class="card-title mb-4">Your shopping cart</h4>
+                <div class="container">
+                  <div id="addressMessage"></div>
+                    <% address.forEach((data)=>{ %>
+                    <div class="shadow my-4">
+                        <div class="form-check py-1 mx-4">
+                            <input class="form-check-input addressValue"  type="radio" name="address"  address-id="<%= data._id%>">
+                              <p>
+                                <strong> <%= data.name %></strong>, <small><%= data.houseName%>, <%= data.street %>, <%= data.city %>, <%= data.state %>, <%= data.phone %>, <%= data.postalCode %></small> 
+                              </p>
+                        </div>
+                        
+                    </div>
+                    <% }) %>
+                    <div class=" pt-1 d-flex justify-content-center">
+                      <button type="button" class="btn btn-primary text-center" data-toggle="modal" id="addButton" data-target="#myModal">
+                          ADD
+                      </button>
+                  </div>
+                </div>
+              
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+              <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                  <h4 class="modal-title" id="myModalLabel">Add Address</h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+                  </div>
+                  <div class="modal-body">
+                  <!-- Your form fields for address properties go here -->
+                  <form id="addressFrom" method="post" >
+                      <div class="form-group">
+                      <label for="name">Name:</label>
+                      <input type="text" class="form-control" id="name" name="name" required>
+                      </div>
+                      <div class="form-group">
+                      <label for="houseName">House Name:</label>
+                      <input type="text" class="form-control" id="houseName" name="houseName" required>
+                      </div>
+                      
+                      <div class="form-group">
+                      <label for="houseName">street:</label>
+                      <input type="text" class="form-control" id="street" name="street" required>
+                      </div>
+                      <div class="form-group">
+                      <label for="houseName">City:</label>
+                      <input type="text" class="form-control" id="city" name="city" required>
+                      </div>
+                      <div class="form-group">
+                      <label for="houseName">state:</label>
+                      <input type="text" class="form-control" id="state" name="state" required>
+                      </div>
+                      <div class="form-group">
+                          <div class="secondary"> <span id="error" ></span></div>
+                      <label for="houseName">Phone:</label>
+                      <input type="number" class="form-control" id="phoneAddress"  name="phone" required>
+                      </div>
+
+                      <div class="form-group">
+                      <label for="houseName">PostalCode:</label>
+                      <input type="number" class="form-control" id="postalCode" name="postalCode" required>
+                      </div>
+                      <input type="submit" class="btn btn-primary" value="Submit" />
+                      <!-- Add more fields for other properties -->
+                  </form>
+                  </div>
+                  <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Close</button>
+                  
+                  </div>
+              </div>
+              </div>
+          </div>
+
+          <!-- modal closed -->
+  
+            <div class="border-top pt-4 mx-4 mb-4">
+              <p><i class="fas fa-truck text-muted fa-lg"></i> Payment Method </p>
+              <!-- <p class="text-muted">
+              </p> -->
+              <div class="shadow my-2">
+                <div id="methodMessage"></div>
+                <div class="form-check py-1 mx-4">
+                    <input class="form-check-input" type="radio" name="payment"  IsMethod="COD" id="flexCheckDefault">
+                      <p>
+                        <strong> Cash on Delivery</strong>
+                      </p>
+                </div>
+            </div>
+            </div>
+          </div>
+        </div>
+        <!-- cart -->
+        <!-- summary -->
+        <div class="col-lg-3">
+          <div class="card mb-3 border shadow-0">
+            <div class="card-body">
+              <form >
+                <div class="form-group">
+                  <label class="form-label">Have coupon?</label>
+                  <div class="input-group">
+                    <input type="text" class="form-control border" name="" placeholder="Coupon code" />
+                    <button class="btn btn-light border">Apply</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+          <div class="card shadow-0 border">
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Total price:</p>
+                <p class="mb-2">₹ <%=totalPrice  %></p>
+              </div>
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Discount:</p>
+                <p class="mb-2 text-success">-$60.00</p>
+              </div>
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">TAX:</p>
+                <p class="mb-2">$14.00</p>
+              </div>
+              <hr />
+              <div class="d-flex justify-content-between">
+                <p class="mb-2">Total price:</p>
+                <p class="mb-2 fw-bold " >₹ <div class="price"><%= totalPrice %></div> </p>
+              </div>
+  
+              <div class="mt-3">
+                <form id="makePurchase" >
+                  <button class="btn btn-success w-100 shadow-0 mb-2"  type="submit" id="purchase"> Make Purchase </button>
+
+                </form>
+                <a href="#" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- summary -->
+      </div>
+    </div>
+  </section>
+
+  <script>
+  const phoneNO = document.getElementById("phoneAddress")
+  const errMes = document.getElementById("error")
+  const Purchase = document.getElementById("purchase");
+    const amount = document.querySelector(".price").innerText
+
+    document.getElementById("addButton").addEventListener("click", function() {
+      $('#myModal').modal('show');
+    });
+    const addressPost = document.getElementById("addressFrom");
+    addressPost.addEventListener("submit",function(e){
+        e.preventDefault();
+        if(phoneNO.value.length !== 10){
+            errMes.innerHTML = "not 10 digit";
+        }
+
+        addressPost.action ="/addAddress"
+                addressPost.method="post"
+                addressPost.submit();
+    })
+
+    const radioInputs = document.getElementsByName("address")
+    let addressId
+    for(let i = 0 ; i<radioInputs.length;i++){
+      radioInputs[i].addEventListener("click",function(){
+        if(radioInputs[i].checked){
+          addressId = radioInputs[i].getAttribute("address-id")
+        }
+      })
+    }
+    const paymentMethod = document.getElementsByName("payment")
+    let method
+    for(let i = 0 ; i<paymentMethod.length;i++){
+      paymentMethod[i].addEventListener("click",function(){
+        if(paymentMethod[i].checked){
+          method = paymentMethod[i].getAttribute("IsMethod")
+        }
+      })
+    }
+
+    
+   Purchase.addEventListener("click",async (e)=>{
+    e.preventDefault();
+    if(!addressId){
+      return document.getElementById("addressMessage").innerHTML = "you want select address"
+    }
+    if(!method){
+      return document.getElementById("methodMessage").innerHTML = "you want select method"
+    }
+    const makePurchaseForm = document.getElementById("makePurchase");
+
+    // makePurchaseForm.method = "POST",
+    // makePurchaseForm.action = "/orderPost"
+    // makePurchaseForm.submit()
+    const body = {
+      method:method,
+      address:addressId,
+      amount:amount
+    };
+
+    const response = await fetch('/orderPost',{
+                    method:"POST",
+                    headers:{
+                      "Content-Type": "application/json"},
+                    body:JSON.stringify(body)
+                })
+
+    if(response.ok){
+      console.log("its ok");
+      popSucc()
+    }else{
+      popOut()
+    }
+   
+
+   })
+
+   function popSucc() {
+  new swal({
+      title: "thanks",
+      text: "order is submited ",
+      // icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    });
+}
+   function popOut() {
+  new swal({
+      title: "Oop!",
+      text: "out of stock ",
+      // icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    });
+}
+  </script>
+<!-- <- include("../layouts/profilefooter.ejs") %> -->

@@ -1,0 +1,401 @@
+<%- include("../layouts/adminhead") %>
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+
+    <!-- Sidebar Toggle (Topbar) -->
+    <!-- <form class="form-inline">
+        <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+        </button>
+
+    </form>
+
+    <!-- Topbar Search -->
+    <!-- <form
+        class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search" method="post" action="/admin/searchCategory">
+        <div class="input-group ">
+            <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+                 name="searchCategory" aria-label="Search" aria-describedby="basic-addon2" required>
+            <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search fa-sm"></i>
+                </button>
+            </div>
+        </div>
+    </form>  -->
+
+    <!-- Topbar Navbar -->
+    <ul class="navbar-nav ml-auto">
+
+        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
+        <li class="nav-item dropdown no-arrow d-sm-none">
+            <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-search fa-fw"></i>
+            </a>
+            <!-- Dropdown - Messages -->
+            <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
+                aria-labelledby="searchDropdown">
+                <!-- <form class="form-inline mr-auto w-100 navbar-search">
+                    <div class="input-group">
+                        <input type="text" class="form-control bg-light border-0 small"
+                            placeholder="Search for..." aria-label="Search"
+                            aria-describedby="basic-addon2" required> 
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search fa-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form> -->
+            </div>
+        </li>
+
+        <li class="nav-item active">
+            <a class="nav-link" href="/admin/home">Home </a>
+          </li>
+
+        <!-- Nav Item - Alerts -->
+        <li class="nav-item dropdown no-arrow mx-1">
+            <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-bell fa-fw"></i>
+                <!-- Counter - Alerts -->
+                <span class="badge badge-danger badge-counter">3+</span>
+            </a>
+            <!-- Dropdown - Alerts -->
+            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="alertsDropdown">
+                <h6 class="dropdown-header">
+                    Alerts Center
+                </h6>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="mr-3">
+                        <div class="icon-circle bg-primary">
+                            <i class="fas fa-file-alt text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="small text-gray-500">December 12, 2019</div>
+                        <span class="font-weight-bold">A new monthly report is ready to download!</span>
+                    </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="mr-3">
+                        <div class="icon-circle bg-success">
+                            <i class="fas fa-donate text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="small text-gray-500">December 7, 2019</div>
+                        $290.29 has been deposited into your account!
+                    </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="mr-3">
+                        <div class="icon-circle bg-warning">
+                            <i class="fas fa-exclamation-triangle text-white"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="small text-gray-500">December 2, 2019</div>
+                        Spending Alert: We've noticed unusually high spending for your account.
+                    </div>
+                </a>
+                <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a>
+            </div>
+        </li>
+
+        <!-- Nav Item - Messages -->
+        <li class="nav-item dropdown no-arrow mx-1">
+            <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-envelope fa-fw"></i>
+                <!-- Counter - Messages -->
+                <span class="badge badge-danger badge-counter">7</span>
+            </a>
+            <!-- Dropdown - Messages -->
+            <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="messagesDropdown">
+                <h6 class="dropdown-header">
+                    Message Center
+                </h6>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="dropdown-list-image mr-3">
+                        <img class="rounded-circle" src="img/undraw_profile_1.svg"
+                            alt="...">
+                        <div class="status-indicator bg-success"></div>
+                    </div>
+                    <div class="font-weight-bold">
+                        <div class="text-truncate">Hi there! I am wondering if you can help me with a
+                            problem I've been having.</div>
+                        <div class="small text-gray-500">Emily Fowler · 58m</div>
+                    </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="dropdown-list-image mr-3">
+                        <img class="rounded-circle" src="img/undraw_profile_2.svg"
+                            alt="...">
+                        <div class="status-indicator"></div>
+                    </div>
+                    <div>
+                        <div class="text-truncate">I have the photos that you ordered last month, how
+                            would you like them sent to you?</div>
+                        <div class="small text-gray-500">Jae Chun · 1d</div>
+                    </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="dropdown-list-image mr-3">
+                        <img class="rounded-circle" src="img/undraw_profile_3.svg"
+                            alt="...">
+                        <div class="status-indicator bg-warning"></div>
+                    </div>
+                    <div>
+                        <div class="text-truncate">Last month's report looks great, I am very happy with
+                            the progress so far, keep up the good work!</div>
+                        <div class="small text-gray-500">Morgan Alvarez · 2d</div>
+                    </div>
+                </a>
+                <a class="dropdown-item d-flex align-items-center" href="#">
+                    <div class="dropdown-list-image mr-3">
+                        <img class="rounded-circle" src="https://source.unsplash.com/Mv9hjnEUHR4/60x60"
+                            alt="...">
+                        <div class="status-indicator bg-success"></div>
+                    </div>
+                    <div>
+                        <div class="text-truncate">Am I a good boy? The reason I ask is because someone
+                            told me that people say this to all dogs, even if they aren't good...</div>
+                        <div class="small text-gray-500">Chicken the Dog · 2w</div>
+                    </div>
+                </a>
+                <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
+            </div>
+        </li>
+
+        <div class="topbar-divider d-none d-sm-block"></div>
+
+        <!-- Nav Item - User Information -->
+        <li class="nav-item dropdown no-arrow">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Douglas McGee</span>
+                <img class="img-profile rounded-circle"
+                    src="img/undraw_profile.svg">
+            </a>
+            <!-- Dropdown - User Information -->
+            <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
+                aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Profile
+                </a>
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Settings
+                </a>
+                <a class="dropdown-item" href="#">
+                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Activity Log
+                </a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Logout
+                </a>
+            </div>
+        </li>
+
+    </ul>
+
+</nav>
+
+
+<div class="container col-lg-9 col-md-9 col-12 p-0 m-0">
+    <div class="container-fluid bg-white profile_Right pb-4">
+        <div class="container-fluid">
+            <div class="container pt-3">
+                <!-- Title -->
+                <div class="d-flex justify-content-between align-items-center py-3">
+                    <h3 class="h5 mb-0"><span class="fw-bold">ORDER ID</span> : <span style="font-size: 14px; color: #959595;">#<%=order.map(item=>item._id)%></span></h3>
+                </div>
+                <!-- Main content -->
+                <div class="row">
+                    <div class="col-lg-8">
+                        <!-- Details -->
+                        <div class="mb-4 profile_info" style="box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);">
+                            <div class="card-body">
+                                <div class="mt-2 d-flex justify-content-between">
+                                    <div class="mx-2 mb-3" >
+                                        <span class="me-3 fw-bold" style="font-size: 13px;color: #959595;">
+                                            <span>Order Date :</span> <%=order.map(item=>item.createdAt.toLocaleDateString())%>
+                                        </span>
+                                        <span class="me-3 fw-bold" style="font-size: 13px;color: #959595;">
+                                            <span>Delivery Date :</span> <%=order.map(item=>item.expectedDelivery.toLocaleDateString())%>
+                                        </span>
+                                        <span id="dataNew">
+                                        <% if (orderCanceld === false) { %>
+                                            <% if (orderStatus == 'Deliverd') { %>
+                                                <span class="badge rounded-pill bg-success"><%=order.map(item=>item.status)%></span>
+                                            <% } else if (orderStatus == 'Processing') { %>
+                                                <span class="badge rounded-pill bg-warning"><%=order.map(item=>item.status)%></span>
+                                            <% } else if (orderStatus == 'Return Accepted') { %>
+                                                <span class="badge rounded-pill bg-success"><%=order.map(item=>item.status)%></span>
+                                            <% } else { %>
+                                                <span class="badge rounded-pill bg-info"><%=order.map(item=>item.status)%></span>
+                                            <% } %>
+                                        <% } else if (orderCanceld === true) { %>
+                                            <% if (orderStatus == 'Canceled') { %>
+                                                <span class="badge rounded-pill bg-danger"><%=order.map(item=>item.status)%></span>
+                                            <% } else { %>
+                                                <span class="badge rounded-pill bg-warning">Order Cancel Requested</span>
+                                            <% } %>
+                                        <% } %>
+                                        </span>
+                                    </div>
+                                </div>
+                                <table class="table table-borderless mb-4">
+                                    <tbody >
+                                        <%orderProducts.forEach((data,index)=>{%>
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex mb-2">
+                                                    <div class="flex-shrink-0">
+                                                        <img src="/productsImg/<%=data.Image[0]%>"
+                                                            alt="" width="35" class="img-fluid"  >
+                                                    </div>
+                                                    <div class="flex-lg-grow-1 ms-3">
+                                                        <h6 class="small mb-0"  style="font-size: 14px;">
+                                                            <a href="#"class="text-reset text-decoration-none">
+                                                                <%=data.name%>
+                                                            </a>
+                                                        </h6>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td  style="font-size: 13px;"><%=data.cartProduct.quantity%></td>
+                                            <td class="text-end fw-bold"  style="font-size: 14px;">₹ <%=data.cartProduct.realPrice%></td>
+                                            
+                                        </tr>
+                                        <%})%>
+                                    </tbody>
+                                        <tfoot class="mt-3" style="border-radius: 10px;">
+                                            <tr>
+                                                <td colspan="2" class="fw-bold" style="color: #959595;">Subtotal</td>
+                                                <td class="text-end"style="color: #959595;">₹ <%=subTotal%></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="fw-bold" style="color: #959595;">Shipping</td>
+                                                <td class="text-end text-success fw-bold" style="color: green;">Free</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="fw-bold" style="color: #959595;">Payment Method</td>
+                                                <td class="text-end fw-bold" style="color: #959595;"><%=order.map(items=>items.payment.method)%></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2" class="fw-bold" style="color: #959595;">Discount</td>
+                                                <td class="text-danger text-end" style="opacity: 80%;">₹<%=order.map(items=>items.payment.amount)%> </td>
+                                            </tr>
+                                            <tr class="fw-bold">
+                                                <td colspan="2">TOTAL</td>
+                                                <td class="text-end">₹ <%=order.map(items=>items.payment.amount)%></td>
+                                            </tr>
+                                        </tfoot>   
+                                </table>
+                            </div>
+                        </div>
+                     
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="profile_info mb-3">
+                            <!-- Shipping information -->
+                            <div class="card-body">
+                                <h6 class="fw-bold ">Status Updation</h6>
+                                <div class="width-100 my-3">
+                                    <select name="status" id="status_<%= order.map(item=>item._id)%>" onchange="updateOrderStatus('<%= order.map(item=>item._id) %>')"style="width: 100%; background-color: white;">
+                                        <option value="<%= order.map(item=>item.status)%>"><%= order.map(item=>item.status)%></option>
+                                        <option value="Processing" <% if (order.map(item=>item.status)==="Processing" ) { %>selected<% } %>>Processing</option>
+                                        <option value="Shipped" <% if (order.map(item=>item.status)==="Shipped" ) { %>selected<% } %>>Shipped</option>
+                                        <option value="Out For Delivery" <% if (order.map(item=>item.status)==="Out For Delivery" ) { %>selected<% } %>>Out For Delivery</option>
+                                        <option value="Deliverd" <% if (order.map(item=>item.status)==="Deliverd" ) { %>selected<% } %>>Deliverd</option>
+                                        <option value="Canceled" <% if (order.map(item=>item.status)==="Canceled" ) { %>selected<% } %>>Canceled</option>
+                                        <option value="Return Accepted" <% if (order.map(item=>item.status)==="Return Accepted" ) { %>selected<% } %>>Return Accepted</option>
+                                    </select>
+                                </div>
+                                <span class="text text-success fw-bold" id="msg"></span>
+                            </div>
+                        </div>
+                        <div class="profile_info mb-3">
+                            <!-- Shipping information -->
+                            <div class="card-body ">
+                                <h6 class="fw-bold pt-2 pb-2">User Information</h6>
+                                <div class="fw-bold" style="font-size: 14px; opacity: 70%;">User Name : <span><%=userDetails.name%></span></div>
+                                <div class="fw-bold" style="font-size: 14px; opacity: 70%;">Payment Method : <span class="badge bg-success rounded-pill"><%=order.map(items=>items.payment.method)%></span></div>
+                                <hr>
+                                <h6 class="fw-bold" style="font-size: 14px; opacity: 70%;">Address :</h6>
+                                <address style="font-size: 14px; opacity: 70%;">
+                                    <label class="fw-bold" style="font-size: 14px; opacity: 70%;"><%=address.name%></label><br>
+                                    <%=address.houseName%>, <%=address.street%><br>
+                                    <%=address.city%>, <%=address.state%><br>
+                                    Ph : <%=address.phone%><br>
+                                    Pin : <%=address.postalCode%>
+                                </address>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    function updateOrderStatus(orderId) {
+     const statusSelect = document.getElementById(`status_${orderId}`);
+     const selectedStatus = statusSelect.value;
+     const msg = document.getElementById('msg');
+
+     // Send a request to update the order status
+     fetch(`/admin/order/${orderId}`, {
+         method: 'PUT',
+         headers: {
+             'Content-Type': 'application/json'
+         },
+         body: JSON.stringify({ status: selectedStatus })
+     })
+     .then(response => response.json())
+     .then(data => {
+         console.log(data);
+         const dataNew = document.getElementById('dataNew');
+
+         // Clear the existing content
+         dataNew.innerHTML = '';
+
+         // Create a new element based on the updated status
+         const spanElement = document.createElement('span');
+         spanElement.className = 'badge rounded-pill';
+
+         if (data === 'Deliverd') {
+             spanElement.className += ' bg-success';
+         } else if (data === 'Processing') {
+             spanElement.className += ' bg-warning';
+         } else if (data === 'Return Accepted') {
+             spanElement.className += ' bg-success';
+         } else if (data === 'Canceled') {
+             spanElement.className += ' bg-danger';
+         } else {
+             spanElement.className += ' bg-info';
+         }
+
+         spanElement.innerText = data;
+
+         // Append the new element to the container
+         dataNew.appendChild(spanElement);
+
+         msg.innerText = 'Status Updated....';
+     })
+     .catch(error => {
+         console.error('Error:', error);
+     });
+ }
+</script>

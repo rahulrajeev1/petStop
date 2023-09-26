@@ -1,0 +1,87 @@
+<%- include("../layouts/adminhead.ejs") %>
+    <div class="row">
+      <div class="col">
+      <section>
+        <section class="h-100 h-custom" style="background-color: #8fc4b7;">
+            <div class="container py-5 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                  <h3 class="d-flex justify-content-center align-items-center" >Edit Address </h3>
+                <div class="col-lg-8 col-xl-6">
+                  <div class="card rounded-3">
+                 
+                    <div class="card-body p-4 p-md-5">
+          
+                      <form class="px-md-2" id="addressFrom" >
+          
+                        <div class="form-outline mb-4">
+                            <label class="form-label" for="form3Example1q">Name</label>
+                          <input type="text" id="form3Example1q" class="form-control"  name="name" id="name" value="<%=address.name%>" required/>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <label class="form-label" for="description">HouseName</label>
+                          <input type="text" name="houseName" class="form-control form-control-md" id="houseName" value="<%=address.houseName%>" required>
+                          </div>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <label class="form-label" for="description">Street</label>
+                          <input type="text" name="street" class="form-control form-control-md" id="street" value="<%=address.street%>" required>
+                          </div>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <label class="form-label" for="description">City</label>
+                          <input type="text" name="city" class="form-control form-control-md" id="discription" value="<%=address.city%>" required>
+                          </div>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <label class="form-label" for="description">State</label>
+                          <input type="text" name="state" class="form-control form-control-md" id="discription" value="<%=address.state%>" required>
+                          </div>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <label class="form-label" for="description">Phone No:</label>
+                          <input type="text" name="phone" class="form-control form-control-md" id="Phone" value="<%=address.phone%>" required>
+                          </div>
+                        </div>
+                        <div class="form-outline mb-4 row">
+                          <div class="col-md-12">
+                              <label class="form-label" for="description">PostalCode</label>
+                          <input type="text" name="postalCode" class="form-control form-control-md" id="discription" value="<%= address.postalCode%>" required>
+                          </div>
+                        </div>
+
+                         <button type="submit" class="btn btn-success btn-lg mb-1">Submit</button>
+                       
+                      </form>
+          
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        
+      </section>
+
+      <script>
+         const addressPost = document.getElementById("addressFrom");
+         const phoneNO = document.getElementById("Phone")
+        addressPost.addEventListener("submit",function(e){
+        e.preventDefault();
+        console.log(phoneNO.value.length )
+        if(phoneNO.value.length !== 10){
+            errMes.innerHTML = "not 10 digit";
+        }
+
+        addressPost.action ="/editAddress/<%=address._id%>"
+                addressPost.method="post"
+                addressPost.submit();
+    
+    })
+      </script>
+     
+<%- include("../layouts/adminfooter.ejs") %>
