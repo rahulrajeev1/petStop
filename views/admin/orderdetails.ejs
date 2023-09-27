@@ -244,7 +244,8 @@
                                     </th>
                                     <td scope="col " class="t_Image px-3" style="cursor: pointer;">
                                         <h6>
-                                            <% if (data.products[0].image.length > 0) { %>
+                                            <% if (data.products.length> 0 &&
+                                            data.products[0].image.length > 0) { %>
                                                     <form action="/admin/orderInformartion" method="POST">
                                                         <input type="hidden" name="userId" value="<%= data.userId %>">
                                                         <input type="hidden" name="orderId" value="<%= data._id %>">

@@ -356,7 +356,7 @@
      const msg = document.getElementById('msg');
 
      // Send a request to update the order status
-     fetch(`/admin/order/${orderId}`, {
+     fetch(`/admin/orderUpdate/${orderId}`, {
          method: 'PUT',
          headers: {
              'Content-Type': 'application/json'

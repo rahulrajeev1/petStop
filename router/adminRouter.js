@@ -36,6 +36,7 @@ router.post("/searchUser",adminController.userSearch)
 
 router.get("/order",adminController.orderList)
 router.post("/orderInformartion",adminController.orderDetails)
+router.put("/orderUpdate/:id",adminController.updateOrder)
 
 module.exports = router;
 

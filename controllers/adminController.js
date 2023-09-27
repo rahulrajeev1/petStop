@@ -436,7 +436,6 @@ exports.orderList = async (req,res)=>{
 
 exports.orderDetails = async (req, res) => {
     try {
-        const admin = false;
         const userId = req.body.userId;
         const orderId = req.body.orderId;
         const userDetails = await userModel.findOne({ _id: userId });
@@ -458,5 +457,16 @@ exports.orderDetails = async (req, res) => {
         res.render("admin/orderInformation", {  order, orderProducts, subTotal, address, orderCanceld, orderStatus, userDetails });
     } catch (error) {
         console.log(error + "orderdetailing error")
+    }
+}
+
+exports.updateOrder = async (req,res)=>{
+    try {
+        await orderModel.findByIdAndUpdate({_id:req.params.id},
+            {$set:{status:req.body.status}}
+            );
+            res.json("ok fine");
+    } catch (error) {
+        
     }
 }

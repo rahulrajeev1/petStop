@@ -1,5 +1,4 @@
 <%- include("../layouts/adminhead.ejs") %>
-
 <div id="wrapper">
 
     <!-- Sidebar -->
@@ -13,6 +12,11 @@
             <div class="sidebar-brand-text mx-3">Pet Stop </div>
         </a>
 
+        <li class="nav-item active">
+            <a class="nav-link" href="/">
+               
+                <span><< home Page</span></a>
+        </li>
         <!-- Divider -->
         <hr class="sidebar-divider my-0">
 
@@ -167,6 +171,7 @@
 <script>
     const phoneNO = document.getElementById("phoneAddress")
     const errMes = document.getElementById("error")
+
     document.getElementById("addButton").addEventListener("click", function() {
       $('#myModal').modal('show');
     });
@@ -175,12 +180,14 @@
         e.preventDefault();
         console.log(phoneNO.value.length )
         if(phoneNO.value.length !== 10){
-            errMes.innerHTML = "not 10 digit";
+           return errMes.innerHTML = "not 10 digit";
+        }else{
+
+            addressPost.action ="/addAddress"
+                    addressPost.method="post"
+                    addressPost.submit();
         }
 
-        addressPost.action ="/addAddress"
-                addressPost.method="post"
-                addressPost.submit();
 
     
     })

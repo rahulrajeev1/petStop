@@ -140,17 +140,23 @@
                 <p class="mb-2">$14.00</p>
               </div>
               <hr />
-              <div class="d-flex justify-content-between">
+              <div class="d-flex ">
                 <p class="mb-2">Total price:</p>
-                <p class="mb-2 fw-bold " >₹ <div class="price"><%= totalPrice %></div> </p>
+                <p class="mb-2 fw-bold pl-3">₹  <div class="price">  <%=totalPrice %></div></p>
               </div>
   
               <div class="mt-3">
-                <form id="makePurchase" >
+                <% if(locals.quantity) {%>
+                  <form  id="makePurchase">
+                    <input type="hidden" name="quantity" productId="<%= Id %>" value="<%= quantity %>">
+                    <button class="btn btn-success w-100 shadow-0 mb-2"  id="purchaseSingle"> Make Purchase</button>
+                  </form>
+                  <% }else{ %>
+                <form id="" >
                   <button class="btn btn-success w-100 shadow-0 mb-2"  type="submit" id="purchase"> Make Purchase </button>
-
                 </form>
-                <a href="#" class="btn btn-light w-100 border mt-2"> Back to shop </a>
+                <% } %>
+                <a href="/" class="btn btn-light w-100 border mt-2"> Back to shop </a>
               </div>
             </div>
           </div>
@@ -164,24 +170,33 @@
   const phoneNO = document.getElementById("phoneAddress")
   const errMes = document.getElementById("error")
   const Purchase = document.getElementById("purchase");
-    const amount = document.querySelector(".price").innerText
+  const purchaseSingleProduct = document.getElementById("purchaseSingle");
 
+
+    const amount = document.querySelector(".price").innerText
+    const addressPost = document.getElementById("addressFrom");
+    const radioInputs = document.getElementsByName("address")
+    const paymentMethod = document.getElementsByName("payment")
+    
     document.getElementById("addButton").addEventListener("click", function() {
       $('#myModal').modal('show');
     });
-    const addressPost = document.getElementById("addressFrom");
+    
+    
     addressPost.addEventListener("submit",function(e){
         e.preventDefault();
         if(phoneNO.value.length !== 10){
-            errMes.innerHTML = "not 10 digit";
+           return errMes.innerHTML = "not 10 digit";
+        }else{
+
+          addressPost.action ="/addAddress"
+                  addressPost.method="post"
+                  addressPost.submit();
         }
 
-        addressPost.action ="/addAddress"
-                addressPost.method="post"
-                addressPost.submit();
     })
 
-    const radioInputs = document.getElementsByName("address")
+   
     let addressId
     for(let i = 0 ; i<radioInputs.length;i++){
       radioInputs[i].addEventListener("click",function(){
@@ -190,7 +205,7 @@
         }
       })
     }
-    const paymentMethod = document.getElementsByName("payment")
+  
     let method
     for(let i = 0 ; i<paymentMethod.length;i++){
       paymentMethod[i].addEventListener("click",function(){
@@ -201,7 +216,7 @@
     }
 
     
-   Purchase.addEventListener("click",async (e)=>{
+   Purchase?.addEventListener("click",async (e)=>{
     e.preventDefault();
     if(!addressId){
       return document.getElementById("addressMessage").innerHTML = "you want select address"
@@ -237,6 +252,49 @@
 
    })
 
+
+  
+
+   purchaseSingleProduct?.addEventListener("click",async (e)=>{
+     e.preventDefault();
+     console.log("here")
+    if(!addressId){
+      return document.getElementById("addressMessage").innerHTML = "you want select address"
+    }
+    if(!method){
+      return document.getElementById("methodMessage").innerHTML = "you want select method"
+    }
+
+    const makePurchaseFrom = document.getElementById("makePurchase")  
+    const quantityInput = makePurchaseFrom.querySelector("[name='quantity']");
+    const Id = quantityInput.getAttribute("productId");
+    // const productId
+ 
+    const body = {
+      method:method,
+      address:addressId,
+      amount:amount,
+      quantity:quantityInput.value
+    };
+    console.log(body);
+
+    const response = await fetch(`/singleOrderPost/${Id}`,{
+                    method:"POST",
+                    headers:{
+                      "Content-Type": "application/json"},
+                    body:JSON.stringify(body)
+                })
+
+    if(response.ok){
+      console.log("its ok");
+      popSucc()
+    }else{
+      popOut()
+    }
+
+   })
+
+
    function popSucc() {
   new swal({
       title: "thanks",
@@ -246,7 +304,9 @@
       dangerMode: true,
     });
 }
-   function popOut() {
+   
+
+function popOut() {
   new swal({
       title: "Oop!",
       text: "out of stock ",
@@ -256,4 +316,4 @@
     });
 }
   </script>
-<!-- <- include("../layouts/profilefooter.ejs") %> -->
+<%- include("../layouts/profilefooter.ejs") %>

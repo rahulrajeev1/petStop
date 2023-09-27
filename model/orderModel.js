@@ -24,7 +24,7 @@ const orderSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    products: [{
+    products: [{ 
         p_name: {
             type: String,
             require: true

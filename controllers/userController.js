@@ -8,7 +8,8 @@ const {twilioFunction} = require("../middleware/twilio")
 const jwt = require('jsonwebtoken');
 const express = require("express");
 const orderModel = require("../model/orderModel")
-const { sendEmail } = require("../middleware/nodemailer")
+const { sendEmail } = require("../middleware/nodemailer");
+const { NetworkContextImpl } = require("twilio/lib/rest/supersim/v1/network");
 
 
 function createToken(userDetails, status){
@@ -54,7 +55,6 @@ exports.regester_post = async(req,res)=>{
     try {
         const anyOne = await userModel.findOne({email:req.body.email});
         const entrie = 1;
-        console.log(req.body)
         if(!anyOne){
            const user = await userModel.create({
                name: req.body.name, 
@@ -70,16 +70,11 @@ exports.regester_post = async(req,res)=>{
            console.log(newOtp);
            const jwtToken = createToken(user, "awaiting-otp") // creating jwt token (the function is declared above)  
            res.cookie("userToken", jwtToken)  // setting token in user cookie
-            // twilioFunction().then((otp) =>{
-            //     saveUser(otp)
-            // })
+
 
             // twilioFunction(randome);   //testing mean
 
-        // function saveUser(otp){
-        //     newUser.save().then(()=>{
-            //     })
-            // }
+    
             console.log("here 2")
             res.redirect('/get_otp_page');
         }
@@ -222,7 +217,6 @@ exports.cart_get = async(req,res)=>{
 exports.singleProductBuy = async (req,res)=>{
     try {
         const id = req.params.id;
-        console.log("id is"+ id);
         const userData = await userModel.findOne({_id:req.userDetails._id});
         const cartItems = userData.cart.items;
         const quantity = req.body.quantity;
@@ -430,16 +424,29 @@ exports.updateProfilePost = async (req,res)=>{
         console.log(req.body);
         const user = await userModel.find({email:email});
         console.log(user)
-        if(user.length > 0) return res.status(302).json({message: "email is already exists"})
-        await userModel.findByIdAndUpdate({_id:req.userDetails._id},{
-            $set:{ 
-                email:email,
-                name:Name,
-                mobile:mobile,
-            }
-        })
-        
-        res.status(200).json({message:"all good "})
+        if(email == req.userDetails.email){
+
+            await userModel.findByIdAndUpdate({_id:req.userDetails._id},{
+                $set:{ 
+                    email:email,
+                    name:Name,
+                    mobile:mobile,
+                }
+            })
+            res.status(200).json({message:"all good "})
+            
+        }else{
+            if(user.length > 0) return res.status(302).json({message: "email is already exists"})
+
+            await userModel.findByIdAndUpdate({_id:req.userDetails._id},{
+                $set:{ 
+                    email:email,
+                    name:Name,
+                    mobile:mobile,
+                }
+            })
+            res.status(200).json({message:"all good "})
+        }
     } catch (error) {
         console.log(error.message)
     }
@@ -453,7 +460,7 @@ exports.addNewAddress = async(req,res)=>{
         const user = await userModel.findOne({_id:userId})
         user.address.push(newAddress);
         await user.save()
-        res.json({message:"new address is added successfully"});
+        res.redirect("/userProfile");
 
     } catch (error) {
         console.log(error.message)
@@ -495,6 +502,72 @@ exports.editAddress_Post = async(req,res) => {
 }
 
 
+
+exports.singleProductBuyCheckOut = async(req,res)=>{
+    try {
+        console.log(req.params.id)
+        const userData = await userModel.findOne({_id:req.userDetails._id});
+        const address = userData.address;
+        const Product = await productModel.findOne({ _id : req.params.id }) // return all products only inside the cart
+       
+        let totalPrice  = Product.Price * req.body.quantity ;
+        
+        const Id = req.params.id;
+        res.render("user/checkOutPage",{address,totalPrice, quantity : req.body.quantity,Id })
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+exports.singleProductOrderPost = async(req,res)=>{
+    try {
+        const product = await productModel.findOne({_id:req.params.id});
+        console.log(product)
+        const currentDate = new Date();
+        const user = await userModel.findOne({_id:req.userDetails._id});
+        const amount = req.body.amount;
+        const method = req.body.method;
+        const addressId = req.body.address;
+        const cartItems = [{
+            productId :product._id,
+            quantity:req.body.quantity,
+            realPrice:product.Price,
+            offer:product.Price
+        }]
+        const productData = [{
+            name:product.Name,
+            realPrice:product.Price,
+            price:amount,
+            description:product.discription,
+            image:product.Image,
+            category:product.Category,
+            quantity:req.body.quantity,
+        }];
+        const deliveryDate = new Date();
+        deliveryDate.setDate(currentDate.getDate() + 5);
+        const orderProduct = new orderModel( {
+            userId:req.userDetails._id,
+            address:addressId,
+            products:productData,
+            payment:{
+                method:method,
+                amount:amount,
+            },
+            proCartDetail: product,
+            cartProduct: cartItems,
+            expectedDelivery: deliveryDate
+        } )
+          if(method === "COD"){
+            await orderProduct.save()
+
+            product.quantity = product.quantity-req.body.quantity;
+            await product.save();
+            res.send("it ok");
+          }
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 
 exports.orderPost = async(req,res)=>{
@@ -552,7 +625,6 @@ exports.orderPost = async(req,res)=>{
 
 exports.orderPageView = async (req,res)=>{
     try {
-        const email = await userModel.findOne({_id:req.userDetails._id});
         const order = await orderModel.find({ userId:req.userDetails._id , orderReturnRequest: false, orderCancleRequest: false, status: { $ne: 'Deliverd' } }).sort({ _id: -1 });
         const orderHist = await orderModel.find({userId: req.userDetails._id,$or: [{ orderCancleRequest: true },{ status: 'Deliverd' }], orderReturnRequest: false, }).sort({ _id: -1 });
         const orderProduct = orderHist.map(data => data.products)
@@ -563,17 +635,17 @@ exports.orderPageView = async (req,res)=>{
         const product = order.map(data => data.products);
         
         const newProduct = product.flat();
-        const status = order.map(data => data.status);
-        const orderstatus = order.map(data => data.orderCancleRequest);
+
+   
         const Date = order.map(data => data.expectedDelivery.toLocaleDateString());
 
-       
        res.render("user/orders",{newProduct,order,Date, 
         orderHist,
         orderProduct,
         orderHistStatus,
         orderHista, }) 
     } catch (error) {
+        console.log("in the order page")
         console.log(error.message)
     }
 }
