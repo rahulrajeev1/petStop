@@ -33,13 +33,17 @@ router.post("/updateCart",userController.updateCart);
 router.post("/orderPost",userController.orderPost);
 router.post("/orderStatus/:id",userController.orderStatus);
 router.post("/orderCancel/:id",userController.orderCancel)
-// router.post("/singleBuy/:id",userController.singleProductBuy)
 router.post("/singleProductCheckOut/:id",userController.singleProductBuyCheckOut)
 router.post("/singleOrderPost/:id",userController.singleProductOrderPost)
-// router.post("/singleProductOrder")
 router.post("/proflieEdit",userController.updateProfilePost)
 router.get("/proflieEdit",userController.updateProfileGet)
+router.post("/success/:id",userController.success)
+//wallet
+router.get("/wallet",userController.walletGet)
 
+router.get("/products",userController.producteDetails)
+router.get("/productFilter/:id",userController.productFilter)
+router.get("/productGetFiltering/:category/:value",userController.productValue)
 
 router.use(errorHandling);
 

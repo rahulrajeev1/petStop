@@ -1,0 +1,81 @@
+<%- include("../layouts/adminhead.ejs") %>
+<body  style="background-color: #8fc4b7;">
+  
+    <div class="row">
+      <div class="col">
+      <section>
+        <section class="h-100 h-custom">
+            <div class="container py-5 h-100">
+              <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-lg-8 col-xl-6">
+                  <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Add Coupon </h3>
+                  <div class="card rounded-3">
+                 
+                    <div class="card-body p-4 p-md-5">
+                      <% if (locals.message) { %>
+                        <div class="alert alert-success">
+                          <strong><%= message %> </strong>
+                        </div>
+                      <% } %> 
+                      <form id="formData">
+          
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Name Coupon</label>
+                          <input type="text" id="form3Example1q" class="form-control"  name="name" id="name" required/ >
+                        </div>
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Coupon value</label>
+                          <input type="number" id="form3Example1q" class="form-control"  name="couponValue" id="name" required/ >
+                        </div>
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">expiryDate</label>
+                          <input type="text" id="form3Example1q" class="form-control"  name="expiryDate" id="name" required/ >
+                        </div>
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Max value</label>
+                          <input type="number" id="form3Example1q" class="form-control"  name="maxValue" id="name" required/ >
+                        </div>
+                        <div class="form-outline mb-4">
+                          <label class="form-label" for="form3Example1q">Min value</label>
+                          <input type="number" id="form3Example1q" class="form-control"  name="miniValue" id="name" required/ >
+                        </div>
+                        <button type="submit" class="btn btn-success btn-lg mb-1">Submit</button>
+                      </form>
+          
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        
+      </section>
+     <script>
+      const formData = document.getElementById("formData")
+      formData.addEventListener('submit' ,async function (e){
+        e.preventDefault();
+        console.log(formData.querySelector("[name ='expiryDate']").value)
+        const formvalue = {
+           name :  formData.querySelector("[name ='name']").value,
+           couponValue:formData.querySelector("[name = 'couponValue']").value,
+           expiryData : formData.querySelector("[name ='expiryDate']").value,
+           maxValue : formData.querySelector("[name = 'maxValue']").value,
+           miniValue : formData.querySelector("[name = 'miniValue']").value
+        };
+       
+        const response = await fetch("/admin/addCoupon",{
+          method:"POST",
+          headers:{
+            "content-type":"application/json"
+          },
+          body:JSON.stringify(formvalue)
+        })
+
+        if(response.ok){
+          if(response.status === 200){
+            console.log("it is added")
+          }
+        }
+      })
+     </script>
+<%- include("../layouts/adminfooter.ejs") %>

@@ -38,5 +38,8 @@ router.get("/order",adminController.orderList)
 router.post("/orderInformartion",adminController.orderDetails)
 router.put("/orderUpdate/:id",adminController.updateOrder)
 
+router.get('/viewCoupon',adminController.couponGet)
+router.get("/getCouponAdd",adminController.addCouponGet)
+router.post("/addCoupon",adminController.addCoupon)
 module.exports = router;
 

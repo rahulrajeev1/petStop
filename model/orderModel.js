@@ -60,6 +60,9 @@ const orderSchema = new mongoose.Schema({
         },
         amount: {
             type: String,
+        },
+        orderId :{
+            type:String,
         }
     },
     proCartDetail: {

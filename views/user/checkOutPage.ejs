@@ -92,7 +92,9 @@
           </div>
 
           <!-- modal closed -->
-  
+
+
+
             <div class="border-top pt-4 mx-4 mb-4">
               <p><i class="fas fa-truck text-muted fa-lg"></i> Payment Method </p>
               <!-- <p class="text-muted">
@@ -103,6 +105,12 @@
                     <input class="form-check-input" type="radio" name="payment"  IsMethod="COD" id="flexCheckDefault">
                       <p>
                         <strong> Cash on Delivery</strong>
+                      </p>
+                </div>
+                <div class="form-check py-1 mx-4">
+                    <input class="form-check-input" type="radio" name="payment"  IsMethod="InternetBanking" id="flexCheckDefault">
+                      <p>
+                        <strong> Internet Banking </strong>
                       </p>
                 </div>
             </div>
@@ -165,7 +173,7 @@
       </div>
     </div>
   </section>
-
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <script>
   const phoneNO = document.getElementById("phoneAddress")
   const errMes = document.getElementById("error")
@@ -215,7 +223,7 @@
       })
     }
 
-    
+
    Purchase?.addEventListener("click",async (e)=>{
     e.preventDefault();
     if(!addressId){
@@ -257,7 +265,6 @@
 
    purchaseSingleProduct?.addEventListener("click",async (e)=>{
      e.preventDefault();
-     console.log("here")
     if(!addressId){
       return document.getElementById("addressMessage").innerHTML = "you want select address"
     }
@@ -276,7 +283,7 @@
       amount:amount,
       quantity:quantityInput.value
     };
-    console.log(body);
+
 
     const response = await fetch(`/singleOrderPost/${Id}`,{
                     method:"POST",
@@ -286,8 +293,72 @@
                 })
 
     if(response.ok){
-      console.log("its ok");
-      popSucc()
+      const data = await response.json();
+        console.log(data.amount);
+
+        if (data.success) {
+          console.log("options")
+          const options = {
+                        key: data.key_id,
+                        amount: data.amount,
+                        currency: 'INR',
+                        name: data.productName,
+                        description: data.description,
+                        image: 'https://dummyimage.com/600x400/000/fff',
+                        order_id: data.order_id,
+                        handler: async function  (response) {
+                            alert('Payment Succeeded');
+                            const body = {
+                              method:method,
+                              address:addressId,
+                              amount:amount,
+                              quantity:quantityInput.value,
+                              orderId:data.order_id,
+                              interNet:true,
+                              
+                            };
+                          console.log(body);
+                            const URL = `/success/${Id}`;
+                            console.log(URL)
+                            try {
+                                 const res = await fetch(URL, {
+                                method: "POST",
+                                headers: {
+                                  "content-type": "application/json"
+                                },
+                                body: JSON.stringify(body)
+                              });
+
+                              if (res.ok) {
+                                alert("Payment added to the database");
+                              }
+                            } catch (error) {
+                              console.log(error.message)
+                            }
+                            
+                        },
+                        prefill: {
+                            contact: data.contact,
+                            name: data.name,
+                            email: data.email
+                        },
+                        notes: {
+                            description: data.description
+                        },
+                        theme: {
+                            color: '#2300a3'
+                        }
+                    };
+                    const razorpayObject = new Razorpay(options);
+                    razorpayObject.on('payment.failed', function (response) {
+                        alert('Payment Failed');
+                    });
+                    razorpayObject.open();
+                }else{
+
+        console.log("its ok");
+        popSucc()
+      }
     }else{
       popOut()
     }
@@ -315,5 +386,10 @@ function popOut() {
       dangerMode: true,
     });
 }
+  
+
+
+
+
   </script>
 <%- include("../layouts/profilefooter.ejs") %>

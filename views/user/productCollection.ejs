@@ -1,0 +1,92 @@
+<%- include("../layouts/adminhead.ejs") %>
+<div id="wrapper">
+
+    <!-- Sidebar -->
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
+
+        <!-- Sidebar - Brand -->
+        <!-- <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
+            <div class="sidebar-brand-text mx-3">Pet Stop </div>
+        </a> -->
+
+        <li class="nav-item active">
+            <a class="nav-link" href="/">
+               
+                <span><< home Page</span></a>
+        </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider my-0">
+
+        <!-- Nav Item - Dashboard -->
+        <!-- <li class="nav-item active">
+            <a class="nav-link" href="/userProfile">
+                <i class="fas fa-fw fa-tachometer-alt"></i>
+                <span>user profile</span></a>
+        </li> -->
+
+        
+
+        <!-- Divider -->
+        <div class="container">
+             <div id="btns"></div> 
+        </div>
+        
+            <li class="nav-item active">
+                <a class="nav-link" >
+                    Filters
+                    <div id="filterId">
+
+                        <div id="setFilter">
+                            
+                            <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filter" identify="all" value="first">                      
+                                <span> 100-1000</span>
+                            </div>
+                            <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filter" identify="all" value="second" >
+                                <span>1000-2000</span>
+                            </div>
+                            <div class="form-check">
+                            <input class="form-check-input" type="radio" name="filter" identify="all" value="third" checked>
+                                <span>above</span>
+                            </div>
+                        </div>
+                    </div>
+
+                        </a>
+            </li>
+        
+    </ul>
+    <!-- End of Sidebar -->
+
+    <div id="content-wrapper" class="d-flex flex-column my-4">
+        <div class="col-xl-12 col-lg-12">
+            <div class="card shadow mb-4">
+                <div class="container p-4">
+                    <div class="row" id="parent">
+                        <% product.forEach((data) =>{  %>
+                            <div class="col-md-4">
+                                <div class= "card" style = "width: 12rem;">
+                                    <img src="/productsImg/<%=data.Image[0] %>" class="card-img-top" alt="${data.title}">
+                                    <div class="card-body">
+                                        <h5 class="card-title"><%= data.Name%></h5>
+                                       
+                                        <a href="#" class="btn btn-primary">Go somewhere</a>
+                                    </div>
+                                    </div>
+                            </div>
+                            <% }) %>
+                        <!-- </div>  -->
+                    </div>
+                 
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+   
+</div>
+
+<script src="/productPage.js"></script>
+

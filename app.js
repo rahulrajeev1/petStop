@@ -18,7 +18,7 @@ const db = require("./model/db");
 db()
 
 app.use( (req, res, next)=>{
-    if (!req.user)
+    if (!req.userDetails)
       res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     next();
   });

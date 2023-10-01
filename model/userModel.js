@@ -52,10 +52,10 @@ let userSchema = new mongoose.Schema({
         }
     }],
     wishlist:[{ type:mongoose.Schema.Types.ObjectId, ref:"Product"}],
-    
-    
-    
-
+    balance:{
+        type:Number,
+        default:0
+    },
     role: {
         type:String,
         default:"user"
@@ -97,9 +97,6 @@ let userSchema = new mongoose.Schema({
         date:{
             type: Date,
             // default: Date.now
-        },
-        particular:{
-            type: String,
         },
         receipts:{
             type: Number,

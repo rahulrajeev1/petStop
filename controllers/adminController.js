@@ -9,7 +9,7 @@ const { resolve } = require("path");
 const userModel = require("../model/userModel");
 const { CompositionContextImpl } = require("twilio/lib/rest/video/v1/composition");
 const orderModel = require("../model/orderModel");
-
+const couponModel = require("../model/couponModel")
 
 
 function createToken(email, status){
@@ -470,3 +470,60 @@ exports.updateOrder = async (req,res)=>{
         
     }
 }
+
+// coupon
+
+exports.couponGet = async (req,res)=>{
+    try {
+        const couponData = await couponModel.find();
+        res.render("admin/coupon",{couponData})
+    } catch (error) {
+       console.log(error.message)
+    }
+}
+exports.addCouponGet = async (req,res)=>{
+    try {
+        res.render("admin/addCoupon")
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+exports.addCoupon = async (req,res) =>{
+    const name = req.body.name;
+    const exsisting = name.replace(/[^a-zA-Z0-9]/g, "") 
+    const present = await couponModel.findOne({
+        $or:[{couponName:{ $regex : new RegExp( exsisting, "i") }},]
+    })
+    console.log(req.body);
+    if(present){
+
+        res.status(300).json("it is already existed");
+
+    }else{
+        const coupon = new couponModel({
+            couponName:req.body.name,
+            couponValue:req.body.couponValue,
+            expiryDate:req.body.expiryData,
+            maxValue:req.body.maxValue,
+            minValue:req.body.miniValue,
+        })
+        await coupon.save()
+        res.status(200).json("coupon added");
+    }
+    
+
+}
+
+exports.removeCoupon = async (req,res)=>{
+    try {
+        const id = req.params.id;
+        await couponModel.findByIdAndDelete(id)
+        res.status(200).json("remove successfully")
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+

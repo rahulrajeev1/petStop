@@ -8,9 +8,17 @@ const {twilioFunction} = require("../middleware/twilio")
 const jwt = require('jsonwebtoken');
 const express = require("express");
 const orderModel = require("../model/orderModel")
+const categoryModel = require("../model/categoryModel");
 const { sendEmail } = require("../middleware/nodemailer");
 const { NetworkContextImpl } = require("twilio/lib/rest/supersim/v1/network");
+const Razorpay = require("razorpay")
+const {KEYID,KEY_SECRET} = process.env
 
+
+let  razorpayInstance = new Razorpay({
+    key_id: KEYID,
+    key_secret: KEY_SECRET,
+  });
 
 function createToken(userDetails, status){
     return jwt.sign({
@@ -19,24 +27,6 @@ function createToken(userDetails, status){
     }, process.env.JWT_KEY)
 }
 
-// function twilioFunction(){
-//     const client = require("twilio")(process.env.ACCOUNTSID,process.env.AUTHTOKEN);
-//     const randome = Math.floor(Math.random()*9000) +1000;
-//      console.log(randome);
-//      client.messages
-// .create({
-//   body : `your otp ${randome}`,
-//   to : "+917306626990",
-//   from:'+12545002775'
-// }).then(() => {
-//     // Return the generated OTP for further use (optional)
-//     return randomOTP;
-//   }).catch((error) => {
-//     // Handle any errors that occur during sending
-//     console.error("Error sending OTP:", error);
-//     throw error;
-//   });
-// }
 
 
 
@@ -149,7 +139,13 @@ exports.login_post = async(req,res)=>{
         
         if(user.isBlocked === true) return res.status(400).json({message:"it is blocked"})
         console.log("correct user entered")
-        const jwtToken = createToken(user, "logged");
+        const userData = {
+            _id:user._id,
+            eamil:user.email
+        }
+
+        // change userDetails
+        const jwtToken = createToken(userData, "logged");
         res.cookie("userToken", jwtToken)
         req.user = user;
          res.status(200).json({message:"Logined is successful"}) 
@@ -212,42 +208,6 @@ exports.cart_get = async(req,res)=>{
         console.log(error.message)
     }
 } 
-
-
-exports.singleProductBuy = async (req,res)=>{
-    try {
-        const id = req.params.id;
-        const userData = await userModel.findOne({_id:req.userDetails._id});
-        const cartItems = userData.cart.items;
-        const quantity = req.body.quantity;
-        const existingCartItems = cartItems.find((item)=> item.productId.toString() === id);
-        
-        const product = await productModel.findOne({_id:id});
-        const productPrice = product.Price;
-        
-        if(existingCartItems){
-            existingCartItems.quantity += 1;
-            existingCartItems.realPrice = existingCartItems.quantity * productPrice;
-            console.log( existingCartItems.price)
-        }else{
-            const newCartItem = {
-                productId :id,
-                quantity:quantity,
-                realPrice:productPrice,
-                offer:product.Price
-            }
-            userData.cart.items.push(newCartItem);
-        }
-    
-        await userData.save();
-        res.json('successfully  ur product')
-
-    } catch (error) {
-
-        console.log(error.message)
-    }
-   
-}
 
 exports.addToCart_post= async (req,res)=>{
     try {
@@ -502,7 +462,9 @@ exports.editAddress_Post = async(req,res) => {
 }
 
 
+//order
 
+ 
 exports.singleProductBuyCheckOut = async(req,res)=>{
     try {
         console.log(req.params.id)
@@ -519,14 +481,16 @@ exports.singleProductBuyCheckOut = async(req,res)=>{
     }
 }
 
-exports.singleProductOrderPost = async(req,res)=>{
-    try {
+exports.success = async(req,res) =>{
+    console.log("here in the success")
+    try{
         const product = await productModel.findOne({_id:req.params.id});
-        console.log(product)
         const currentDate = new Date();
         const user = await userModel.findOne({_id:req.userDetails._id});
         const amount = req.body.amount;
         const method = req.body.method;
+
+
         const addressId = req.body.address;
         const cartItems = [{
             productId :product._id,
@@ -552,18 +516,121 @@ exports.singleProductOrderPost = async(req,res)=>{
             payment:{
                 method:method,
                 amount:amount,
+                orderId: req.body?.orderId ,
             },
             proCartDetail: product,
             cartProduct: cartItems,
             expectedDelivery: deliveryDate
         } )
+        try {
+            console.log(req.body)
+            await orderProduct.save()
+            product.quantity = product.quantity-req.body.quantity;
+            await product.save();
+            return res.status(200).json("added in the database");
+        } catch (error) {
+            console.log(error.message)
+        }
+
+    }catch(error){
+
+    }
+}
+
+exports.singleProductOrderPost = async(req,res)=>{
+    try {
+        const product = await productModel.findOne({_id:req.params.id});
+        const currentDate = new Date();
+        const user = await userModel.findOne({_id:req.userDetails._id});
+        const amount = req.body.amount;
+        const method = req.body.method;
+        const productName = product.Name;
+
+        const addressId = req.body.address;
+        const cartItems = [{
+            productId :product._id,
+            quantity:req.body.quantity,
+            realPrice:product.Price,
+            offer:product.Price
+        }]
+        const productData = [{
+            name:product.Name,
+            realPrice:product.Price,
+            price:amount,
+            description:product.discription,
+            image:product.Image,
+            category:product.Category,
+            quantity:req.body.quantity,
+        }];
+        const deliveryDate = new Date();
+        deliveryDate.setDate(currentDate.getDate() + 5);
+        const orderProduct = new orderModel( {
+            userId:req.userDetails._id,
+            address:addressId,
+            products:productData,
+            payment:{
+                method:method,
+                amount:amount,
+                orderId: req.body?.orderId ,
+            },
+            proCartDetail: product,
+            cartProduct: cartItems,
+            expectedDelivery: deliveryDate
+        } )
+
+
+        // if(req.body.interNet){
+        //     try {
+        //         console.log(req.body)
+        //         await orderProduct.save()
+        //         product.quantity = product.quantity-req.body.quantity;
+        //         await product.save();
+        //         return res.status(200).json("added in the database");
+        //     } catch (error) {
+        //         console.log(error.message)
+        //     }
+            
+        // }
+
           if(method === "COD"){
             await orderProduct.save()
 
             product.quantity = product.quantity-req.body.quantity;
             await product.save();
-            res.send("it ok");
+            res.json("it ok");
+          }else if(method === "InternetBanking"){
+
+            const amount  = req.body.amount*100;
+            const options = {
+                amount:amount,
+                currency:"INR",
+                receipt:"rec1"
+            }
+             razorpayInstance.orders.create(options,(err,order)=>{
+                 if(!err){
+                     console.log(order.id)
+                    res.status(200).send({
+                        success:true,
+                        msg:"order Created",
+                        order_id:order.id,
+                        amount:amount,
+                        key_id:KEYID,
+                        productName:productData.map( item => item.name),
+                        discription:productData.map( item => item.description),
+                        contact:"9946800267",
+                        email:"rahul@gamil.com",
+                        name:"rahul",
+                        order:orderProduct, 
+                    })
+                }else{
+                    console.log(err)
+                }
+            })
+
+            
           }
+
+
     } catch (error) {
         console.log(error)
     }
@@ -690,9 +757,149 @@ try {
             orderCancleRequest: true
         }
     })
-    res.redirect("/orderPage")
-} catch (error) {
-    
-}
+    const orderData  = await orderModel.findOne({_id:id});
+    const orderPayment = orderData.payment;
+    if(orderPayment.method === "InternetBanking"){
+        const user = await userModel.findOne({_id:req.userDetails._id});
+        const order = await orderModel.findOne({_id:id});
+        const orderId = order.payment.orderId;
+
+        // razorpayInstance.orders.cancel(orderId, (error, response) => {
+        //     console.log("inide the rax")
+        //     if(!error){
+        //         console.log("it is removed")
+        //     }else{
+        //         console.log(error)
+        //     }
+        // })
+        
+
+
+        let val = user.balance;
+        const balance = Number(orderPayment.amount) + val;
+
+        const wallet = {
+            date : new Date.now(),
+            amount : balance,
+            receipts : orderPayment.amount
+        }
+        user.wallet.push(wallet);
+        user.balance = balance;
+        await user.save();
+
+        }
+         res.redirect("/orderPage")
+    } catch (error) {
+         console.log(error.message);
+    }
 }
 
+
+exports.walletGet = async (req,res) =>{
+    try {
+        const userData =  await userModel.findOne({_id:req.userDetails._id});
+        const wallet = userData.wallet;
+        res.render("user/wallet",{wallet});
+    
+    } catch (error) {
+        console.log(error )
+    }
+}
+
+
+// product 
+exports.producteDetails = async (req,res)=>{
+    try{
+        const product = await productModel.find();
+        res.render("user/productCollection",{product});
+    }catch(error){
+
+    }
+}
+
+exports.allProduct = async (req,res)=>{
+    try {
+        const product = await productModel.find();
+        res.status(200).json(product);
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+exports.productFilter = async (req,res)=>{
+    try {
+        const item = req.params.id;
+        console.log(item)
+        
+        if(item =="cat"){
+            const cat = await categoryModel.findOne({name:item});
+            const product = await productModel.find({Category:cat._id})
+            res.json(product);
+        }else if(item === "Dog"){
+            const dog = await categoryModel.findOne({name:item});
+            const product = await productModel.find({Category:dog._id});
+            res.json(product)
+
+        }else if(item === "bird"){
+            const fish = await categoryModel.find({name:item});
+            const product = await productModel.find({Category:fish._id})
+            res.json(product);
+        }else{
+         const product = await productModel.find();
+         res.json(product);
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+exports.productValue = async (req,res)=>{
+    try{
+       const {value ,category}= req.params;
+       console.log(value)
+       console.log(category +"it is")
+       const category1 = await categoryModel.findOne({name:category});
+       if(category1){
+            console.log(category1)
+           if(value == "first"){
+            const product = await productModel.find({
+                Category:category1._id,
+                Price:{$gt:0,$lte:1000}
+            })
+            res.json(product)
+           }else if(value === "second"){
+            const product = await productModel.find({
+                Category:category1._id,
+                Price:{$gt:1000,$lte:2000}
+            })
+            res.json(product)
+           }else{
+        const product = await productModel.find({
+            Category:category1._id,
+            Price:{$gt:2000}
+        })
+        res.json(product)
+       }
+    }else if (category === "all"){
+           if(value == "first"){
+
+            const product = await productModel.find({
+                Price:{$gt:0,$lte:1000}
+            })
+            res.json(product)
+           }else if(value === "second"){
+            const product = await productModel.find({
+                Price: { $gt: 1000, $lte: 2000 }
+              });
+            res.json(product)
+           }else{
+        const product = await productModel.find({
+            Price:{$gt:2000}
+        })
+        res.json(product)
+       }
+    }
+    }catch(error){
+        console.log(error);
+    }
+}
