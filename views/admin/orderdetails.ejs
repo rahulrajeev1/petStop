@@ -222,8 +222,8 @@
         <div class="container-fluid Pa_table  p-4" style="border: 2px solid rgb(163, 163, 215) ; border-radius: 20px;">
             <div class="container-fluid  P_table px-2 ">
                 <div class="container-fluid p-0 d-flex align-items-center justify-content-center">
-                    <table class="w-100 tableSize">
-                        <thead class="cartTop" id="tableHeader"
+                    <table class="w-100 tableSize table table-responsive table-striped">
+                        <thead class="cartTop " id="tableHeader"
                             style="position:sticky; top: 0; z-index: 1;">
                             <tr class="cart_table">
                                 <th class="first p-3 px-4" scope="col">Id</th>
@@ -263,6 +263,7 @@
                                             <%= data.user.name%>
                                         </span>
                                     </td>
+                            
                                     <td scope="col" class="px-3">
                                         <%if(data.payment.method==="COD" ){%>
                                             <span class="badge rounded-pill bg-info">

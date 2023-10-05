@@ -291,8 +291,12 @@
                                                 <td class="text-end fw-bold" style="color: #959595;"><%=order.map(items=>items.payment.method)%></td>
                                             </tr>
                                             <tr>
+                                                <td colspan="2" class="fw-bold" style="color: #959595;">coupon</td>
+                                                <td class="text-end fw-bold" style="color: #959595;"><%=order.map(items=>items.payment.coupon)%></td>
+                                            </tr>
+                                            <tr>
                                                 <td colspan="2" class="fw-bold" style="color: #959595;">Discount</td>
-                                                <td class="text-danger text-end" style="opacity: 80%;">0</td>
+                                                <td class="text-danger text-end" style="opacity: 80%;"><%=order.map(items=>items.payment.discount)%></td>
                                             </tr>
                                             <tr class="fw-bold">
                                                 <td colspan="2">TOTAL</td>

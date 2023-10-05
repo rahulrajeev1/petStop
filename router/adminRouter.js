@@ -7,7 +7,7 @@ const { authenticateAdmin, checkAdminLoggedIn } = require("../middleware/authAdm
 router.get("/home",authenticateAdmin,adminController.adminHome)
 router.get("/adminLogin", checkAdminLoggedIn,adminController.get_adminLogin)
 router.post("/adminLogin",adminController.post_adminLogin)
-
+router.get('/adminLogout',adminController.adminLogout)
 
 router.get("/category",authenticateAdmin,adminController.get_category);
 router.post("/addCategory",adminController.post_addCategory); 
@@ -40,6 +40,7 @@ router.put("/orderUpdate/:id",adminController.updateOrder)
 
 router.get('/viewCoupon',adminController.couponGet)
 router.get("/getCouponAdd",adminController.addCouponGet)
+router.post("/couponDelete/:id",adminController.deleteCoupon);
 router.post("/addCoupon",adminController.addCoupon)
 module.exports = router;
 

@@ -10,6 +10,9 @@ let categorySchema = new mongoose.Schema({
     discription:{
         type:String,
     },
+    discount:{
+        type:Number
+    },
     isavilable:{
         type:Boolean,
         default:true

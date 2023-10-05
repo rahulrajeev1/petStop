@@ -51,7 +51,12 @@ let userSchema = new mongoose.Schema({
             required: true
         }
     }],
-    wishlist:[{ type:mongoose.Schema.Types.ObjectId, ref:"Product"}],
+    wishlist:[{
+        productId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Product"
+        }
+    }],
     balance:{
         type:Number,
         default:0

@@ -50,7 +50,10 @@ exports.adminHome = async (req,res)=>{
     res.render("admin/adminHome")
 }
 
-
+exports.adminLogout = (req,res)=>{
+    res.clearCookie('adminToken'); // Clear the adminToken cookie
+    res.redirect("/admin/adminLogin");
+}
 
 exports.addProduct = async(req,res)=>{
     const cateData = await categoryModel.find();
@@ -237,7 +240,8 @@ exports.post_addCategory = async(req,res)=>{
 
             const newCategorey = new CategoryModel({
                 name:req.body.name,
-                discription:req.body.discription
+                discription:req.body.discription,
+                discount:req.body.discount
             })
             console.log(req.body) 
     
@@ -275,7 +279,8 @@ exports.post_editCategory = async(req,res)=>{
 
             const updatedCategory = await CategoryModel.findByIdAndUpdate(categoryId, { 
                 name:req.body.name,
-                discription:req.body.discription
+                discription:req.body.discription,
+                discount:req.body.discount
              }, { new: true });
             res.redirect("/admin/category");
         }
@@ -451,7 +456,8 @@ exports.orderDetails = async (req, res) => {
             }
         }
         const address = userDetails.address.find(items => items._id.toString() == order.map(items => items.address).toString());
-        const subTotal = cartProducts.reduce((totals, items) => totals + items.price, 0);
+        const subTotal = cartProducts.reduce((totals, items) => totals + items.realPrice, 0);
+        console.log(cartProducts);
         const [orderCanceld] = order.map(item => item.orderCancleRequest);
         const orderStatus = order.map(item => item.status);
         res.render("admin/orderInformation", {  order, orderProducts, subTotal, address, orderCanceld, orderStatus, userDetails });
@@ -488,7 +494,15 @@ exports.addCouponGet = async (req,res)=>{
         console.log(error.message);
     }
 }
-
+exports.deleteCoupon = async (req,res)=>{
+    try{
+         await couponModel.findByIdAndDelete(req.params.id);
+        res.json("deleted the coupon")
+        
+    }catch(error){
+        console.log(error.message)
+    }
+}
 exports.addCoupon = async (req,res) =>{
     const name = req.body.name;
     const exsisting = name.replace(/[^a-zA-Z0-9]/g, "") 

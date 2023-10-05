@@ -16,9 +16,6 @@ const productSchema = new mongoose.Schema({
         type:String,
         // required:true,
     }],
-
-
-
     Category:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"Category",
@@ -31,8 +28,6 @@ const productSchema = new mongoose.Schema({
         type:String,
         required:true,
     },
-
- 
     hide : {
         type:Boolean,
         default:false,

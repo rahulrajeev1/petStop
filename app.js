@@ -26,6 +26,9 @@ app.use( (req, res, next)=>{
 
 app.use("/",userRouter);
 app.use("/admin",adminRouter);
+app.get("*",(req,res)=>{
+  res.render("error")
+})
 
 app.listen(3001,()=>{
     console.log("it working on 3001");

@@ -11,7 +11,7 @@
             <div class="card-body p-4 p-md-5">
               <h3 class="mb-4 pb-2 pb-md-0 mb-md-5 px-md-2">Registration Info</h3>
 
-              <form class="px-md-2" action="/admin/addProduct" enctype="multipart/form-data" method="post"> 
+              <form class="px-md-2" action="/admin/addProduct" enctype="multipart/form-data" method="post" onsubmit="return validateForm()"> 
               <!-- <form class="px-md-2"   id="form" enctype="multipart/form-data"> -->
 
                 <div class="form-outline mb-4">
@@ -39,11 +39,11 @@
                   <label class="form-label" for="form3Example1q">Brand</label>
                 </div>
                 <div class="form-outline mb-4">
-                  <input type="number" id="form3Example1q" class="form-control" name="quantity" min="0" id="quantity" required />
+                  <input type="number" id="form3Example1q" class="form-control" name="quantity" min="0" id="quantity" onchange="handleFileInput(event)" required />
                   <label class="form-label" for="form3Example1q">Quantity</label>
                 </div>
                 <div class="form-outline mb-4">
-                  <input type="file" id="form3Example1q" class="form-control" name="image"  accept=".png, .jpg, .jpeg" required  multiple />
+                  <input type="file" id="productImg" class="form-control" name="image" accept=".png, .jpg" required  multiple />
                   <label class="form-label" for="form3Example1q">Images</label>
                 </div>
 
@@ -94,5 +94,21 @@
   console.log(error)
 })
 </script> -->
+
+<script>
+  function validateForm(){
+    var fileInput = document.getElementById("productImg");
+    // var fileInput = document.getElementById('image');
+    var filePath = fileInput.value.toLowerCase();
+    console.log(filePath);
+    
+            if (!filePath.endsWith('.jpg') && !filePath.endsWith('.jpeg') && !filePath.endsWith('.png') && !filePath.endsWith('.gif')) {
+                alert('Please select a valid image file (jpg, jpeg, png, or gif).');
+                return false;
+            }
+            
+            return true;
+        }
+</script>
 
 <%- include("../layouts/adminfooter.ejs") %>

@@ -29,7 +29,7 @@
                         </div>
                         <div class="form-outline mb-4">
                           <label class="form-label" for="form3Example1q">expiryDate</label>
-                          <input type="text" id="form3Example1q" class="form-control"  name="expiryDate" id="name" required/ >
+                          <input type="date" id="form3Example1q" class="form-control"  name="expiryDate" id="name" required/ >
                         </div>
                         <div class="form-outline mb-4">
                           <label class="form-label" for="form3Example1q">Max value</label>
@@ -74,6 +74,8 @@
         if(response.ok){
           if(response.status === 200){
             console.log("it is added")
+            alert("added new coupon")
+            location.href ="/admin/viewCoupon"
           }
         }
       })

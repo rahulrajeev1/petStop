@@ -3,47 +3,7 @@
 <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">Pet Stop </div>
-        </a>
-
-        <li class="nav-item active">
-            <a class="nav-link" href="/">
-                
-                <span><< home Page</span></a>
-        </li>
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" href="/userProfile">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>user profile</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        
-
-        <li class="nav-item">
-            <a class="nav-link" href="">
-                <i class="fas fa-fw fa-table"></i>
-                <span>orders</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider d-none d-md-block">
-
-   
-    </ul>
+    <%- include("../layouts/userProfileSide.ejs") %>
     <!-- End of Sidebar -->
 
     <div id="content-wrapper" class="d-flex flex-column my-4">
@@ -94,7 +54,8 @@
                                     <td scope="col" class="px-3">
                                         <span class="couponListFont"
                                             style="color:#959595">₹<span>&nbsp;</span>
-                                            <%= data.products.reduce((sum, item) => sum + parseInt(item.realPrice), 0) %>
+                                            <!-- <= data.products.reduce((sum, item) => sum + parseInt(item.realPrice), 0) %> -->
+                                            <%= data.payment.amount %>
                                         </span>
                                     </td>
                                     <td scope="col" class="px-3">
@@ -147,24 +108,29 @@
                                     </td>
                                     <td class=" py-3 d-flex align-items-center">
                                         <% if(data.orderCancleRequest===true){%>
-                                            <a href="/profile/orderView?id=<%=data._id%>"
+                                           <a 
                                                 class="order-cancel-link container d-flex align-items-center text-decoration-none text-dark"
-                                                data-order-id="<%= orderHistStatus[index]._id %>">
+                                                data-order-id="<%=orderHistStatus[index]._id %>">
                                                 <div class="p-0" style="position: relative;">
-                                                    <h3 class="text-white bg-danger p-1 "
-                                                        style="position: absolute; font-size: 7.4px;  border-radius: 4px;">
-                                                        Order Canceled
-                                                    </h3>
+                                                        <h3 class="text-white bg-danger p-1 "
+                                                            style="position: absolute; font-size: 7.4px;  border-radius: 4px;">
+                                                            Order Canceled
+                                                        </h3>      
                                                     <img src="/productsImg/<%=data.products[0].image[0]%>"
                                                         alt="" class="img-fluid" width="60px"
                                                         style="border-radius: 5px;">
                                                 </div>
                                             </a>
                                     <td class="py-3 p-4" style="font-size: 13px; color:#959595">
-                                        <h6 for="" ><span class="badge rounded-pill bg-danger">Order Canceled</span></h6>
+                                        <% if(data.status === "Canceled") {%>
+                                            <h6 for="" ><span class="badge rounded-pill bg-danger">Canceled</span></h6>
+                                            <% }else{ %>
+                                                <h6 for="" ><span class="badge rounded-pill bg-danger">Order Canceled</span></h6>
+                                            <% } %>
                                     </td>
                                     <%} else{%>
-                                        <a href="/profile/orderView?id=<%=data._id%>" class="order-cancel-link container d-flex align-items-center text-decoration-none text-dark">
+                                        
+                                        <a class="order-cancel-link container d-flex align-items-center text-decoration-none text-dark">
                                             <img src="/productsImg/<%=data.products[0].image[0]%>"alt="" class="img-fluid" width="60px"
                                                 style="border-radius: 5px;">
                                         </a>
@@ -201,8 +167,9 @@
                                     <%if(data.orderCancleRequest===false){%>
                                         <td class="py-3 p-4"style="font-size: 13px; color:#959595">
                                             <h6 for="" class=""></h6>
-                                            <form action="/profile/orderReturn/<%=data._id%>" method="post">
-                                                <button class="btn btn-success" style="font-size: 13px;">
+                                            <!-- <form action="/orderReturn/<=data._id%>" method="post" id="returnProduct"> -->
+                                            <form>
+                                                <button class="btn btn-success" style="font-size: 13px;" onclick="returnProduct('<%=data._id%>')">
                                                     Return
                                                 </button>
                                             </form>
@@ -211,7 +178,7 @@
                                         <td class="py-3 p-4"style="font-size: 13px; color:#959595">
                                             <h6 for="" class=""></h6>
                                             <button class="btn btn-danger"style="font-size: 13px;">
-                                              NoReturn
+                                              On Return
                                             </button>
                                         </td>
                                     <%}%>
@@ -248,9 +215,16 @@
         addressPost.action ="/addAddress"
                 addressPost.method="post"
                 addressPost.submit();
-
     
     })
+
+
+    async function returnProduct(Id){
+        const response = await fetch(`/orderReturn/${Id}`,{method:"POST"});
+        if(response.ok){
+            alert("product is return")
+        }
+    }
   </script>
 
 

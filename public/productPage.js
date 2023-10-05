@@ -42,11 +42,14 @@ function card(data){
     
     // Card content
     cardDiv.innerHTML = `
-        <div class= "card my-2 mt-2" style = "width: 12rem;">
-        <img src="/productsImg/${data.Image[0]}" class="card-img-top" alt="${data.title}">
+    <div class= "card my-2 mt-2" style = "width: 12rem; ">
+         <a href="/singleViewProduct/${data._id}">
+        <img src="/productsImg/${data.Image[0]}" class="card-img-top"  " alt="${data.title}">
+        </a>
         <div class="card-body">
-            <h5 class="card-title">${data.Name}</h5>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
+            <p class="card-title text-truncate"><small>${data.Name}</small></p>
+            <p><sup><strong>₹</strong></sup>${data.Price}</p>
+            <a href="/singleViewProduct/${data._id}" class="btn btn-primary">Go somewhere</a>
         </div>
         </div>
     `;

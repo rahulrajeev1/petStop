@@ -1,70 +1,29 @@
 <%- include("../layouts/adminhead") %>
 
 
-<div id="wrapper">
+<div id="wrapper" style="background-color: slategrey;">
 
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="#">
-            <div class="sidebar-brand-icon rotate-n-15">
-                <i class="fas fa-laugh-wink"></i>
-            </div>
-            <div class="sidebar-brand-text mx-3">Pet Stop </div>
-        </a>
-
-        <li class="nav-item active">
-            <a class="nav-link" href="/">
-                
-                <span><< home Page</span></a>
-        </li>
-        <!-- Divider -->
-        <hr class="sidebar-divider my-0">
-
-        <!-- Nav Item - Dashboard -->
-        <li class="nav-item active">
-            <a class="nav-link" href="/userProfile">
-                <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>user profile</span></a>
-        </li>
-
-        <!-- Divider -->
-        <hr class="sidebar-divider">
-
-        
-
-        <li class="nav-item">
-            <a class="nav-link" href="">
-                <i class="fas fa-fw fa-table"></i>
-                <span>orders</span></a>
-        </li>
-        
-        <!-- Divider -->
-        <hr class="sidebar-divider d-none d-md-block">
-        
-        <li class="nav-item">
-            <a class="nav-link" href="">
-                <i class="fa-solid fa-wallet"></i>
-                <span>wallet</span></a>
-        </li>
-   
-    </ul>
+    <%- include("../layouts/userProfileSide.ejs") %>
     <!-- End of Sidebar -->
     <div id="content-wrapper" class="d-flex flex-column my-4"> 
         <div class="container">
 
             <!-- Outer Row -->
-            <div class="row justify-content-center">
+            <div class="row justify-content-center" >
         
                 <div class="col-xl-10 col-lg-10 col-md-9  ">
         
-                    <div class="card o-hidden border-0 shadow-lg my-5">
-                        <div class="card-body p-0">
-                            <!-- Nested Row within Card Body -->
-
+                    <div class="card o-hidden border-0 shadow-lg my-5" >
+                        <center>
+                        <div  style="height: 20rem; width: 17rem;background-color: rgb(243, 179, 179);" class="card-body p-0 my-3 rounded border  border-success">
+                                <center><h3 class="mt-5" style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;background-color: rgb(182, 182, 182);"><i class="fa-solid fa-wallet"></i> Wallet</h3></center>
+                                <h4 class="mt-5">₹ <%= wallet %></h4>
+                                
+                            </div>
+                        </center>
                            <!-- <center><i class="fa-solid fa-wallet" style="font-size: 50px;"></i></center> -->
-                           sdfda
+                           
                         </div>
                     </div>
         

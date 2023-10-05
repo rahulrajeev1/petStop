@@ -1,4 +1,9 @@
 <%- include("../layouts/adminhead.ejs") %>
+<% if(logined){ %>
+    <%- include("../layouts/navLogined.ejs") %>
+    <% }else{ %>
+    <%- include("../layouts/navNot-loginUser.ejs") %>
+    <% } %>
 <div id="wrapper">
 
     <!-- Sidebar -->
@@ -58,6 +63,8 @@
         
     </ul>
     <!-- End of Sidebar -->
+
+    
 
     <div id="content-wrapper" class="d-flex flex-column my-4">
         <div class="col-xl-12 col-lg-12">

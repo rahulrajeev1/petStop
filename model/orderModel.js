@@ -63,6 +63,12 @@ const orderSchema = new mongoose.Schema({
         },
         orderId :{
             type:String,
+        },
+        discount:{
+            type:Number,
+        },
+        coupon:{
+            type:String
         }
     },
     proCartDetail: {

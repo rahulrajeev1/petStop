@@ -62,13 +62,13 @@
 
 <!-- products <section> -->
     <section id="product1" >
-        <div class="col-xl-12 col-lg-7 shadow" >
+        <div class="col-xl-12 col-lg-12 shadow" >
             
             <div class="row">
            
             <div class="d-flex justify-content-around">
                 <% product.forEach((product,index)=>{ %>
-                <div class="pro col-sm-12 col-lg-4">
+                <div class="pro col-md-2 col-sm-2">
                     <img src="/productsImg/<%= product.Image[0]%>" alt="" srcset="">
                    <div class="des">
                        <span><%= product.brand %></span>

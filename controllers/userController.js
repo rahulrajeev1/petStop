@@ -11,7 +11,8 @@ const orderModel = require("../model/orderModel")
 const categoryModel = require("../model/categoryModel");
 const { sendEmail } = require("../middleware/nodemailer");
 const { NetworkContextImpl } = require("twilio/lib/rest/supersim/v1/network");
-const Razorpay = require("razorpay")
+const Razorpay = require("razorpay");
+const couponModel = require("../model/couponModel");
 const {KEYID,KEY_SECRET} = process.env
 
 
@@ -26,6 +27,7 @@ function createToken(userDetails, status){
         status
     }, process.env.JWT_KEY)
 }
+
 
 
 
@@ -156,6 +158,31 @@ exports.login_post = async(req,res)=>{
     }
 }
 
+exports.loginResetPasswordGet = async (req,res)=>{
+    if(!req.userDetails){
+        res.render("user/userResetLogin")
+    }else{
+        res.redirect("/")
+    }
+}
+
+exports.loginResetPasswordPost = async (req,res)=>{
+    console.log(req.body)
+    try {
+        const email = req.body.email;
+        const user = await userModel.findOne({email:email});
+        if(user){
+            user.password = req.body.password;
+            await user.save();
+            res.status(200).json("set")
+        }else{
+            res.status(300).json("not exist")
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
 exports.getSingleProductview = async(req,res)=>{
     try {
         const productId = req.params.id;
@@ -171,7 +198,7 @@ exports.getSingleProductview = async(req,res)=>{
 exports.userLogOut =async(req,res)=>{
     
         res.clearCookie('userToken'); // Clear the adminToken cookie
-        res.redirect('/admin/adminLogin'); // Redirect to the login page or any other desired destination
+        res.redirect('/'); // Redirect to the login page or any other desired destination
     
 }
 
@@ -200,6 +227,7 @@ exports.cart_get = async(req,res)=>{
             for(let item of cartItems){
                 totalPrice += (item.quantity * item.realPrice);
             }
+            const coupon = await couponModel.find()
             res.render("user/cartPage",{cartPro,totalPrice,cartItems})
         }else{
             res.redirect("/login");
@@ -222,7 +250,6 @@ exports.addToCart_post= async (req,res)=>{
         if(existingCartItems){
             existingCartItems.quantity += 1;
             existingCartItems.realPrice = existingCartItems.quantity * productPrice;
-            console.log( existingCartItems.price)
         }else{
             const newCartItem = {
                 productId :id,
@@ -282,13 +309,33 @@ exports.checkOutPage = async(req,res)=>{
         const cartItems = userData.cart.items
         const cartProductIds = cartItems.map(item => item.productId)  // return all product ids in items
         const cartProducts = await productModel.find({ _id : { $in: cartProductIds } }) // return all products only inside the cart
-       
-        let totalPrice  = 0 ;
-        
-        for(let item of cartItems){
-            totalPrice += (item.quantity * item.realPrice);
+
+       let price =0;
+       cartItems.forEach((item)=>{
+           price += (item.quantity * item.realPrice);
+        })
+        let totalPrice  = price;
+        const ProductInfoWithCategory = await productModel.find({ _id : { $in: cartProductIds } }).populate("Category")
+        let categoryDiscount= {};
+ 
+        ProductInfoWithCategory.forEach((item) =>{
+            if(!categoryDiscount[item.Category.name]){
+                categoryDiscount[item.Category.name] = item.Category?.discount
+            }
+        })
+        const values = Object.values(categoryDiscount);
+        let sum =0;
+        for(let value of values){
+            sum+=value
         }
-        res.render("user/checkOutPage",{address,totalPrice})
+        const discount = (sum/values.length);
+ 
+        const discountRemider = Math.floor(price*(discount/100))
+        totalPrice-=discountRemider;
+        const couponData = await couponModel.find()
+        const coupon = couponData.filter((data)=> !data.userId.includes(req.userDetails._id));
+         res.render("user/checkOutPage",{address,totalPrice,price,coupon,discount})
+
     }catch(error){
         console.log(error.message)
     }
@@ -326,7 +373,9 @@ exports.resetPasswordOtp = async(req,res)=>{
         const num4 = req.body.num_4;
         const code = parseInt( num1 + num2 + num3 + num4 );
         const foundOtp = await otpModel.findOneAndDelete({number:code});
-        console.log(code);
+        console.log(foundOtp)
+        console.log("here in the reset password"+code);
+        console.log(foundOtp.number)
         if(code == foundOtp.number){
             res.render("user/reSetPassword")
         }else{
@@ -467,30 +516,70 @@ exports.editAddress_Post = async(req,res) => {
  
 exports.singleProductBuyCheckOut = async(req,res)=>{
     try {
-        console.log(req.params.id)
         const userData = await userModel.findOne({_id:req.userDetails._id});
         const address = userData.address;
         const Product = await productModel.findOne({ _id : req.params.id }) // return all products only inside the cart
-       
-        let totalPrice  = Product.Price * req.body.quantity ;
-        
+        const couponData  = await couponModel.find();
+        const coupon = couponData.filter((data)=> !data.userId.includes(req.userDetails._id));
+        let price  = Product.Price * req.body.quantity ;
+        let totalPrice = price;
         const Id = req.params.id;
-        res.render("user/checkOutPage",{address,totalPrice, quantity : req.body.quantity,Id })
+         const ProductInfoWithCategory = await productModel.find({_id:Id}).populate("Category")
+        let categoryDiscount= {};
+
+        ProductInfoWithCategory.forEach((item) =>{
+            if(!categoryDiscount[item.Category.name]){
+                categoryDiscount[item.Category.name] = item.Category.discount || 0
+            }
+        })
+        const values = Object.values(categoryDiscount);
+        let sum =0;
+        for(let value of values){
+            sum+=value
+        }
+        const discount = (sum/values.length);
+
+        const discountRemider = Math.floor(totalPrice*(discount/100))
+        totalPrice-=discountRemider;
+
+        res.render("user/checkOutPage",{address,totalPrice,price,discount, quantity : req.body.quantity,Id ,coupon})
     } catch (error) {
         console.log(error.message)
     }
 }
 
 exports.success = async(req,res) =>{
-    console.log("here in the success")
     try{
         const product = await productModel.findOne({_id:req.params.id});
         const currentDate = new Date();
         const user = await userModel.findOne({_id:req.userDetails._id});
         const amount = req.body.amount;
         const method = req.body.method;
+        const coupon = req.body.coupon;
+        console.log("before")
+        console.log(req.body);
 
 
+        if(req.body.coupon){
+            const couponData = await couponModel.findOne({couponName:req.body.coupon})
+            couponData.userId.push(req.userDetails._id)
+            couponData.save()
+        }
+
+        const ProductInfoWithCategory = await productModel.find({_id:req.params.id}).populate("Category")
+        let categoryDiscount= {};
+
+        ProductInfoWithCategory.forEach((item) =>{
+            if(!categoryDiscount[item.Category.name]){
+                categoryDiscount[item.Category.name] = item.Category.discount || 0 
+            }
+        })
+        const values = Object.values(categoryDiscount);
+        let sum =0;
+        for(let value of values){
+            sum+=value
+        }
+        const discount = (sum/values.length);
         const addressId = req.body.address;
         const cartItems = [{
             productId :product._id,
@@ -509,7 +598,7 @@ exports.success = async(req,res) =>{
         }];
         const deliveryDate = new Date();
         deliveryDate.setDate(currentDate.getDate() + 5);
-        const orderProduct = new orderModel( {
+        const orderProduct = new orderModel({
             userId:req.userDetails._id,
             address:addressId,
             products:productData,
@@ -517,6 +606,8 @@ exports.success = async(req,res) =>{
                 method:method,
                 amount:amount,
                 orderId: req.body?.orderId ,
+                discount:discount,
+                coupon: coupon || undefined
             },
             proCartDetail: product,
             cartProduct: cartItems,
@@ -533,7 +624,7 @@ exports.success = async(req,res) =>{
         }
 
     }catch(error){
-
+        console.log(error.message)
     }
 }
 
@@ -544,7 +635,30 @@ exports.singleProductOrderPost = async(req,res)=>{
         const user = await userModel.findOne({_id:req.userDetails._id});
         const amount = req.body.amount;
         const method = req.body.method;
+        const coupon = req.body.coupon;
         const productName = product.Name;
+        console.log(coupon+"coupon")
+        if(coupon){
+            const couponData = await couponModel.findOne({couponName:coupon})
+            couponData.userId.push(req.userDetails._id)
+            couponData.save();
+        }
+
+       
+        const ProductInfoWithCategory = await productModel.find({_id:req.params.id}).populate("Category")
+        let categoryDiscount= {};
+
+        ProductInfoWithCategory.forEach((item) =>{
+            if(!categoryDiscount[item.Category.name]){
+                categoryDiscount[item.Category.name] = item.Category.discount || 0
+            }
+        })
+        const values = Object.values(categoryDiscount);
+        let sum =0;
+        for(let value of values){
+            sum+=value
+        }
+        const discount = (sum/values.length);
 
         const addressId = req.body.address;
         const cartItems = [{
@@ -572,12 +686,14 @@ exports.singleProductOrderPost = async(req,res)=>{
                 method:method,
                 amount:amount,
                 orderId: req.body?.orderId ,
+                discount:discount,
+                coupon: coupon || undefined
             },
             proCartDetail: product,
             cartProduct: cartItems,
             expectedDelivery: deliveryDate
         } )
-
+       
 
         // if(req.body.interNet){
         //     try {
@@ -608,7 +724,7 @@ exports.singleProductOrderPost = async(req,res)=>{
             }
              razorpayInstance.orders.create(options,(err,order)=>{
                  if(!err){
-                     console.log(order.id)
+                     console.log(order.id + "it in  internet")
                     res.status(200).send({
                         success:true,
                         msg:"order Created",
@@ -632,13 +748,13 @@ exports.singleProductOrderPost = async(req,res)=>{
 
 
     } catch (error) {
-        console.log(error)
+        console.log(error.message)
     }
 }
 
-
-exports.orderPost = async(req,res)=>{
-    try{
+exports.successCart = async (req,res)=>{
+    console.log("here it is cart success")
+    try {
         const currentDate = new Date();
         const user = await userModel.findOne({_id:req.userDetails._id});
         const cartItems = user.cart.items;
@@ -647,6 +763,32 @@ exports.orderPost = async(req,res)=>{
         const amount = req.body.amount;
         const method = req.body.method;
         const addressId = req.body.address;
+
+        if(req.body.coupon){
+            const couponData = await couponModel.findOne({couponName:req.body.coupon})
+            couponData.userId.push(req.userDetails._id)
+            couponData.save();
+        }
+
+        //discount started
+
+        const ProductInfoWithCategory = await productModel.find({_id : { $in : cartProductIds}}).populate("Category")
+        let categoryDiscount= {};
+
+        ProductInfoWithCategory.forEach((item) =>{
+            if(!categoryDiscount[item.Category.name]){
+                categoryDiscount[item.Category.name] = item.Category.discount || 0
+            }
+        })
+        const values = Object.values(categoryDiscount);
+        let sum =0;
+        for(let value of values){
+            sum+=value
+        }
+        const discount = (sum/values.length);
+        
+        // discount closed
+
         const productData = cartProducts.map(product =>({
             name:product.Name,
             realPrice:product.Price,
@@ -665,6 +807,88 @@ exports.orderPost = async(req,res)=>{
             payment:{
                 method:method,
                 amount:amount,
+                discount:discount,
+                coupon:req.body?.coupon ,
+                orderId: req.body?.orderId ,
+            },
+            proCartDetail: cartProducts,
+            cartProduct: cartItems,
+            expectedDelivery: deliveryDate
+        } )
+        await orderProduct.save()
+            for(let values of cartItems){
+                for(let product of cartProducts){
+                    if(new String(values.productId).trim() === new String(product._id).trim()){
+                        if(product.quantity == 0) return res.status(300).send({message:"out of stoke"})
+                        product.quantity = product.quantity - values.quantity;
+                        await product.save();
+                    }
+                }
+            }
+            user.cart.items = [];
+            await user.save();
+        res.json("added to the database")
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+exports.orderPost = async(req,res)=>{
+    try{
+        console.log("here in the order cart post")
+        const currentDate = new Date();
+        const user = await userModel.findOne({_id:req.userDetails._id});
+        const cartItems = user.cart.items;
+        const cartProductIds = cartItems.map(item => item.productId.toString());
+        const cartProducts = await productModel.find({_id : { $in : cartProductIds}});
+        const amount = req.body.amount;
+        const method = req.body.method;
+        const addressId = req.body.address;
+        
+        if(req.body.coupon){
+            const couponData = await couponModel.findOne({couponName:req.body.coupon})
+            couponData.userId.push(req.userDetails._id)
+            couponData.save();
+        }
+
+        //discount started
+
+        const ProductInfoWithCategory = await productModel.find({_id : { $in : cartProductIds}}).populate("Category")
+        let categoryDiscount= {};
+
+        ProductInfoWithCategory.forEach((item) =>{
+            if(!categoryDiscount[item.Category.name]){
+                categoryDiscount[item.Category.name] = item.Category?.discount || 1
+            }
+        })
+        const values = Object.values(categoryDiscount);
+        let sum =0;
+        for(let value of values){
+            sum+=value
+        }
+        const discount = (sum/values.length);
+        
+        // discount closed
+
+        const productData = cartProducts.map(product =>({
+            name:product.Name,
+            realPrice:product.Price,
+            price:amount,
+            description:product.discription,
+            image:product.Image,
+            category:product.Category,
+            quantity:product.quantity
+        }));
+        const deliveryDate = new Date();
+        deliveryDate.setDate(currentDate.getDate() + 5);
+        const orderProduct = new orderModel( {
+            userId:req.userDetails._id,
+            address:addressId,
+            products:productData,
+            payment:{
+                method:method,
+                amount:amount,
+                discount:discount,
+                coupon:req.body.coupon
             },
             proCartDetail: cartProducts,
             cartProduct: cartItems,
@@ -683,7 +907,34 @@ exports.orderPost = async(req,res)=>{
             }
             user.cart.items = [];
             await user.save();
-            res.send("it ok");
+            res.json("it ok");
+          }else if(method === "InternetBanking"){
+            const amount  = req.body.amount*100;
+            const options = {
+                amount:amount,
+                currency:"INR",
+                receipt:"rec1"
+            }
+             razorpayInstance.orders.create(options,(err,order)=>{
+                 if(!err){
+                     console.log(order.id)
+                    res.status(200).send({
+                        success:true,
+                        msg:"order Created",
+                        order_id:order.id,
+                        amount:amount,
+                        key_id:KEYID,
+                        productName:productData.map( item => item.name),
+                        discription:productData.map( item => item.description),
+                        contact:"9946800267",
+                        email:"rahul@gamil.com",
+                        name:"rahul",
+                        order:orderProduct, 
+                    })
+                }else{
+                    console.log(err)
+                }
+            })
           }  
     }catch(error){
         console.log(error.message)
@@ -698,6 +949,7 @@ exports.orderPageView = async (req,res)=>{
         
         const orderHistStatus = orderHist.map(data => data.orderCancleRequest);
         const orderHista = orderHist.map(data => data.status);
+        console.log(orderHist)
         
         const product = order.map(data => data.products);
         
@@ -763,6 +1015,7 @@ try {
         const user = await userModel.findOne({_id:req.userDetails._id});
         const order = await orderModel.findOne({_id:id});
         const orderId = order.payment.orderId;
+        console.log("inside the return amount to the wallets")
 
         // razorpayInstance.orders.cancel(orderId, (error, response) => {
         //     console.log("inide the rax")
@@ -779,7 +1032,7 @@ try {
         const balance = Number(orderPayment.amount) + val;
 
         const wallet = {
-            date : new Date.now(),
+            date : new Date(),
             amount : balance,
             receipts : orderPayment.amount
         }
@@ -794,11 +1047,21 @@ try {
     }
 }
 
+exports.productReturn = async (req,res)=>{
+    const orderData = await orderModel.findOne({_id:req.params.id});
+    orderData.orderCancleRequest=true;
+    orderData.status = "Canceled";
+    await orderData.save();
+    res.json("return form user");
+
+}
 
 exports.walletGet = async (req,res) =>{
     try {
         const userData =  await userModel.findOne({_id:req.userDetails._id});
-        const wallet = userData.wallet;
+        const wallet = userData.balance;
+        console.log(wallet)
+
         res.render("user/wallet",{wallet});
     
     } catch (error) {
@@ -811,9 +1074,10 @@ exports.walletGet = async (req,res) =>{
 exports.producteDetails = async (req,res)=>{
     try{
         const product = await productModel.find();
-        res.render("user/productCollection",{product});
+        const logined = req.userDetails; 
+        res.render("user/productCollection",{product,logined});
     }catch(error){
-
+        console.log(error.message)
     }
 }
 
@@ -901,5 +1165,81 @@ exports.productValue = async (req,res)=>{
     }
     }catch(error){
         console.log(error);
+    }
+}
+
+//whishlist
+
+exports.addToWhishlist = async (req,res) =>{
+    try {
+        const Id = req.params.id;
+        
+        if(!req.userDetails) return res.status(300).json("user not logged");
+        console.log("here in  the add ot wishlist")
+
+        const userData = await userModel.findOne({_id:req.userDetails._id});
+        const exsistingWhishList = userData.wishlist.map((data)=> data.productId.toString()===Id);
+        console.log(exsistingWhishList)
+        if(exsistingWhishList.includes(true)){
+         console.log("it is alread7u")
+            res.json("it is already exsist")
+        }else{
+            const wishlish = {
+                productId:Id
+            }
+            userData.wishlist.push(wishlish)
+            console.log(userData)
+            await userData.save();
+            res.json("inserted to the wishlish ")
+        }
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+exports.getWhislist = async (req,res)=>{
+    try {
+        const userData = await userModel.findOne({_id:req.userDetails._id});
+        const productId  = userData.wishlist.map((item)=> item.productId);
+        const product = await productModel.find({_id:{ $in : productId }})
+        res.render("user/wishlist",{product})
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+exports.deleteFromwhislist = async (req,res)=>{
+    try {
+        const   PROID =req.params.id;
+        await userModel.findOneAndUpdate({_id:req.userDetails._id},
+            { $pull:{wishlist:{productId:PROID}}}
+        );
+        res.json("it work");
+        
+    } catch (error) {
+        
+    }
+}
+
+// coupon
+
+exports.addCoupon = async (req,res)=>{
+    try {
+        const couponData = await couponModel.findOne({couponName:req.body.name});
+        const amount = parseInt(req.body.amount)
+        console.log(amount)
+        if(couponData?.minValue<= amount && amount<= couponData?.maxValue){
+            const amount1= amount-couponData.couponValue;
+            // if(!couponData.userId.includes(req.userDetails._id)){
+            //     couponData.userId.push(req.userDetails._id);
+            //     couponData.save();
+            // }
+            
+            res.json({amount:amount1 ,couponValue:couponData.couponValue});
+        }else{
+            res.status(300).json({mEA:"343" , MEA:"DIKJOA"});
+        }
+    } catch (error) {
+        console.log(error)
     }
 }

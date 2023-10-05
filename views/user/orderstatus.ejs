@@ -80,7 +80,7 @@
                                                 <tfoot class=" pt-2" style="border-radius: 10px;">
                                                     <tr>
                                                         <td colspan="2" class="fw-bold" style="color: #959595;">Subtotal</td>
-                                                        <td class="text-end"style="color: #959595;">₹ <%=order.map(items=>items.payment.amount)%></td>
+                                                        <td class="text-end"style="color: #959595;">₹ <%=subTotal%></td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="2" class="fw-bold" style="color: #959595;">Shipping</td>
@@ -91,12 +91,16 @@
                                                         <td class="text-end fw-bold" style="color: #959595;"><%=order.map(items=>items.payment.method)%></td>
                                                     </tr>
                                                     <tr>
+                                                        <td colspan="2" class="fw-bold" style="color: #959595;">coupon</td>
+                                                        <td class="text-end fw-bold" style="color: #959595;"><%=order.map(items=>items.payment.coupon)%></td>
+                                                    </tr>
+                                                    <tr>
                                                         <td colspan="2" class="fw-bold" style="color: #959595;">Additional Discount</td>
                                                         <td class="text-danger text-end" style="opacity: 80%;">₹<%=order.map(items=>items.payment.amount) - subTotal%> </td>
                                                     </tr>
                                                     <tr class="fw-bold">
                                                         <td colspan="2">TOTAL</td>
-                                                        <td class="text-end">₹ <%=subTotal%></td>
+                                                        <td class="text-end">₹ <%=order.map(items=>items.payment.amount)%> </td>
                                                     </tr>
                                                 </tfoot>   
                                         </table>
