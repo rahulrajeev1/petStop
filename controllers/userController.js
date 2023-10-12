@@ -218,8 +218,8 @@ exports.cart_get = async (req, res) => {
       for (let item of cartItems) {
         totalPrice += item.quantity * item.realPrice;
       }
-      const coupon = await couponModel.find();
-      res.render("user/cartPage", { cartPro, totalPrice, cartItems });
+      
+      res.render("user/cartPage", { cartPro, totalPrice, cartItems ,cartCount});
     } else {
       res.redirect("/login");
     }
@@ -1251,6 +1251,7 @@ exports.deleteFromwhislist = async (req, res) => {
 
 exports.addCoupon = async (req, res) => {
   try {
+    console.log(req.body.name)
     const couponData = await couponModel.findOne({ couponName: req.body.name });
     const amount = parseInt(req.body.amount);
     console.log(amount);
@@ -1263,7 +1264,7 @@ exports.addCoupon = async (req, res) => {
 
       res.json({ amount: amount1, couponValue: couponData.couponValue });
     } else {
-      res.status(300).json({ mEA: "343", MEA: "DIKJOA" });
+      res.status(300).json("not fine");
     }
   } catch (error) {
     console.log(error);

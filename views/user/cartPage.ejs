@@ -1,85 +1,93 @@
-<%- include("../layouts/userHeader") %>
-<%- include("../layouts/navLogined.ejs") %>
+<%- include("../layouts/userHeader") %> <%- include("../layouts/navLogined.ejs") %>
 
+<!-- cart + summary -->
+<section class="bg-light my-5">
+  <div class="container">
+    <div class="row">
+      <!-- cart -->
+      <div class="col-lg-9">
+        <div class="card border shadow-0">
+          <div class="m-4">
+            <h4 class="card-title mb-4">Your shopping cart</h4>
+            <% cartPro.forEach((data,index)=>{%>
+            <div class="row gy-3 mb-4 cartPro" data-product-id="<%=data._id%>">
+              <!--  it help to search the find the product in database  -->
+              <div class="col-lg-5">
+                <div class="me-lg-5">
+                  <div class="d-flex">
+                    <img
+                      src="/productsImg/<%= data.Image[0]%>"
+                      class="border rounded me-3"
+                      style="width: 96px; height: 96px"
+                    />
 
-  
-  <!-- cart + summary -->
-  <section class="bg-light my-5">
-    <div class="container">
-      <div class="row">
-        <!-- cart -->
-        <div class="col-lg-9">
-          <div class="card border shadow-0">
-            <div class="m-4">
-              <h4 class="card-title mb-4">Your shopping cart</h4>
-              <% cartPro.forEach((data,index)=>{%>
-              <div class="row gy-3 mb-4 cartPro" data-product-id="<%=data._id%>">          <!--  it help to search the find the product in database  -->
-                <div class="col-lg-5">
-                  <div class="me-lg-5">
-                    <div class="d-flex">
-                      <img src="/productsImg/<%= data.Image[0]%>" class="border rounded me-3" style="width: 96px; height: 96px;" />
-
-                      <div class="">
-                        <!-- <= element.name > -->
-                        <a href="#" class="nav-link"><%= data.Name %></a>
-                        <!-- <p class="text-muted">Yellow, Jeans</p> -->
-                      </div>
+                    <div class="">
+                      <!-- <= element.name > -->
+                      <a href="#" class="nav-link"><%= data.Name %></a>
+                      <!-- <p class="text-muted">Yellow, Jeans</p> -->
                     </div>
                   </div>
                 </div>
-                <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
-                  <div class="">
-        
-                  </div>
-                  <div class="price" data-product-id="<%=data._id%>" >
-                    <p>
-                      ₹<%= data.Price %>
-                    </p>
-                   </div>
-                </div>
-                <div class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-end mb-2 removeCart">
-                  <div class="float-md-end">
-                    <button  class="btn btn-light border text-danger icon-hover-danger "> Remove</button>
-                  </div>
+              </div>
+              <div class="col-lg-2 col-sm-6 col-6 d-flex flex-row flex-lg-column flex-xl-row text-nowrap">
+                <div class=""></div>
+                <div class="price" data-product-id="<%=data._id%>">
+                  <p>₹<%= data.Price %></p>
                 </div>
               </div>
-              <div class="outOfStoke" id="errorMessage" data-product-id="<%= data._id %>"></div>
-              <div class="input-group mb-3" id="addingButton" style="width: 170px;">
-                <button class="btn btn-white border border-secondary px-3 minus " 
-                  type="button" data-product-id="<%=data._id%>"
-                  data-max-quantity="<%= data.quantity %>" 
-                  id="button-addon1" 
-                  data-mdb-ripple-color="dark">
-                  <i class="fas fa-minus"></i>
-                </button> 
-                
-                <input type="number" 
-                 class="form-control text-center border border-secondary num" 
-                 data-product-id="<%=data._id%>"
-                 placeholder="1" aria-label="Example text with button addon"  
-                 min="1" max="<%=data.quantity%>" value="<%=data.stoke%>"   aria-describedby="button-addon1" />
-
-                <button class="btn btn-white border border-secondary px-3 plus" type="button"
-                 id="button-addon2"
-                 data-product-id="<%= data._id %>"
-                 data-max-quantity="<%=data.quantity %>"
-                  data-mdb-ripple-color="dark">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>  
-
-             <% }) %>
-  
-               
+              <div
+                class="col-lg col-sm-6 d-flex justify-content-sm-center justify-content-md-center justify-content-lg-center justify-content-xl-end mb-2 removeCart"
+              >
+                <div class="float-md-end">
+                  <button class="btn btn-light border text-danger icon-hover-danger">Remove</button>
+                </div>
+              </div>
             </div>
-  
-           
+            <div class="outOfStoke" id="errorMessage" data-product-id="<%= data._id %>"></div>
+            <div class="input-group mb-3" id="addingButton" style="width: 170px">
+              <button
+                class="btn btn-white border border-secondary px-3 minus"
+                type="button"
+                data-product-id="<%=data._id%>"
+                data-max-quantity="<%= data.quantity %>"
+                id="button-addon1"
+                data-mdb-ripple-color="dark"
+              >
+                <i class="fas fa-minus"></i>
+              </button>
+
+              <input
+                type="number"
+                class="form-control text-center border border-secondary num"
+                data-product-id="<%=data._id%>"
+                placeholder="1"
+                aria-label="Example text with button addon"
+                min="1"
+                max="<%=data.quantity%>"
+                value="<%=data.stoke%>"
+                aria-describedby="button-addon1"
+              />
+
+              <button
+                class="btn btn-white border border-secondary px-3 plus"
+                type="button"
+                id="button-addon2"
+                data-product-id="<%= data._id %>"
+                data-max-quantity="<%=data.quantity %>"
+                data-mdb-ripple-color="dark"
+              >
+                <i class="fas fa-plus"></i>
+              </button>
+            </div>
+
+            <% }) %>
           </div>
         </div>
-        <!-- cart -->
-        <!-- summary -->
-        <div class="col-lg-3">
-          <!-- <div class="card mb-3 border shadow-0">
+      </div>
+      <!-- cart -->
+      <!-- summary -->
+      <div class="col-lg-3">
+        <!-- <div class="card mb-3 border shadow-0">
             <div class="card-body">
               <form>
                 <div class="form-group">
@@ -92,108 +100,106 @@
               </form>
             </div>
           </div> -->
-          <div class="card shadow-0 border">
-            <div class="card-body">
-              <div class="d-flex justify-content-between">
-                <p class="mb-2">Total price:</p>
-                <p class="mb-2" id="sum"><%=totalPrice %></p>
-              </div>
-              <div class="d-flex justify-content-between">
-                <p class="mb-2">Discount:</p>
-                <p class="mb-2 text-success">₹60</p>
-              </div>
-              <div class="d-flex justify-content-between">
-                <p class="mb-2">TAX:</p>
-                <p class="mb-2">₹14.00</p>
-              </div>
-              <hr />
-              <div class="d-flex justify-content-between" id="totalPrice">
-                <p class="mb-2">Total price:</p>
-                <p class="mb-2 fw-bold" >₹<%=totalPrice%></p>
-              </div>
-  
-              <div class="mt-3">
-                <form >
-                <button type="submit" class="btn btn-success w-100 shadow-0 mb-2" id="purchase"> Make Purchase </button>
+        <div class="card shadow-0 border">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <p class="mb-2">Total price:</p>
+              <p class="mb-2" id="sum"><%=totalPrice %></p>
+            </div>
+            <!-- <div class="d-flex justify-content-between">
+              <p class="mb-2">Discount:</p>
+              <p class="mb-2 text-success">₹0</p>
+            </div>
+            <div class="d-flex justify-content-between">
+              <p class="mb-2">TAX:</p>
+              <p class="mb-2">₹0</p>
+            </div> -->
+            <hr />
+            <div class="d-flex justify-content-between" id="totalPrice">
+              <p class="mb-2">Total price:</p>
+              <p class="mb-2 fw-bold">₹<%=totalPrice%></p>
+            </div>
+
+            <div class="mt-3">
+              <form>
+                <% if(locals.cartCount > 0) { %>
+                <button type="submit" class="btn btn-success w-100 shadow-0 mb-2" id="purchase">Make Purchase</button>
+                <% }else{ %>
+                  <button type="submit" class="btn btn-success w-100 shadow-0 mb-2" id="purchase" disabled>Make Purchase</button>
+
+                  <% } %>
                 <a href="#" class="btn btn-light w-100 border mt-2"> Back to shop </a>
               </form>
-              </div>
             </div>
           </div>
         </div>
-        <!-- summary -->
       </div>
+      <!-- summary -->
     </div>
-  </section>
+  </div>
+</section>
 
-  <script>
-   let removeCartItem = document.getElementsByClassName("removeCart");
+<script>
+  let removeCartItem = document.getElementsByClassName("removeCart");
 
-
-  
-
-   for(let i = 0;i<removeCartItem.length;i++){
+  for (let i = 0; i < removeCartItem.length; i++) {
     let button = removeCartItem[i];
-    button.addEventListener("click",removeFormCart)
-   } 
+    button.addEventListener("click", removeFormCart);
+  }
 
-    async function removeFormCart(event){
-     try {
+  async function removeFormCart(event) {
+    try {
+      const productElement = event.target.closest(".cartPro");
 
-        const productElement = event.target.closest(".cartPro")
-        
+      const productId = productElement.getAttribute("data-product-id");
+      const URL = `/cartRemove/${productId}`;
 
-        const productId = productElement.getAttribute('data-product-id');
-        const URL = `/cartRemove/${productId}`;
-
-        const response = await fetch(URL,{
-          method:"DELETE",
-        });
-        if(response.ok){
-          document.getElementById("errorMessage").remove();
-          document.getElementById("addingButton").remove()
-          productElement.remove()
-          calculateTotalPrice()
-        }else{
-          console.log("failed to remove it form it database")
-        }
-      } catch (error) {
+      const response = await fetch(URL, {
+        method: "DELETE",
+      });
+      if (response.ok) {
+        document.getElementById("errorMessage").remove();
+        document.getElementById("addingButton").remove();
+        productElement.remove();
+        calculateTotalPrice();
+        location.href ="/cart"
+      } else {
+        console.log("failed to remove it form it database");
+      }
+    } catch (error) {
       console.log(error);
     }
-   }
+  }
 
- 
-   const plusButton = document.querySelectorAll(".plus");
-    const minusButtons = document.querySelectorAll(".minus");
-    const numInputs = document.querySelectorAll(".num");
-    const outOfStokes = document.querySelectorAll(".outOfStoke")
+  const plusButton = document.querySelectorAll(".plus");
+  const minusButtons = document.querySelectorAll(".minus");
+  const numInputs = document.querySelectorAll(".num");
+  const outOfStokes = document.querySelectorAll(".outOfStoke");
 
-  
-    const numInputsArray = Array.from(numInputs);
-    const outOfStokesArray = Array.from(outOfStokes);
-    
-   
-    plusButton.forEach((plusButton)=>{
-      plusButton.addEventListener("click",()=>{
-        const productId = plusButton.getAttribute("data-product-id");
-        const maxQuantity =  parseInt(plusButton.getAttribute("data-max-quantity"));
-        const numInput = numInputsArray.find((input )=> input.getAttribute("data-product-id") === productId);
-        let quantity= parseInt(numInput.value);
-        
-        if(quantity < maxQuantity){
-          quantity++;
-          numInput.value = quantity
-        }else{
-          const outOfStoke = outOfStokesArray.find((input )=> input.getAttribute("data-product-id") === productId);
-            outOfStoke.innerHTML = "out of stoke"
-        }
-      })
-    })
+  const numInputsArray = Array.from(numInputs);
+  const outOfStokesArray = Array.from(outOfStokes);
 
-    minusButtons.forEach((minusButton) => {
+  plusButton.forEach((plusButton) => {
+    plusButton.addEventListener("click", () => {
+      const productId = plusButton.getAttribute("data-product-id");
+      const maxQuantity = parseInt(plusButton.getAttribute("data-max-quantity"));
+      const numInput = numInputsArray.find((input) => input.getAttribute("data-product-id") === productId);
+      let quantity = parseInt(numInput.value);
+
+      if (quantity < maxQuantity) {
+        quantity++;
+        numInput.value = quantity;
+      } else {
+        const outOfStoke = outOfStokesArray.find((input) => input.getAttribute("data-product-id") === productId);
+        outOfStoke.innerHTML = "out of stoke";
+      }
+    });
+  });
+
+  minusButtons.forEach((minusButton) => {
     minusButton.addEventListener("click", () => {
       const productId = minusButton.getAttribute("data-product-id");
-      const numInput = numInputsArray.find(input => input.getAttribute("data-product-id") === productId);
+      const numInput = numInputsArray.find((input) => input.getAttribute("data-product-id") === productId);
       let quantity = parseInt(numInput.value);
 
       if (quantity > 1) {
@@ -203,63 +209,63 @@
     });
   });
 
-
-
   function calculateTotalPrice() {
-  let totalPrice = 0;
-  const cartProElements = document.querySelectorAll('.cartPro');
+    let totalPrice = 0;
+    const cartProElements = document.querySelectorAll(".cartPro");
 
-  cartProElements.forEach((cartItem) => {
-    const productId = cartItem.getAttribute('data-product-id');                    
-     const priceElements = cartItem.querySelector(".price"); // Assuming you have a ".price" element for the item price
-     
-     const quantityInput =  numInputsArray.find((input )=> input.getAttribute("data-product-id") === productId);
-     const price = parseFloat(priceElements.innerText.replace("₹", ""));
-   
-    const quantity = parseInt(quantityInput.value);
-    totalPrice += price * quantity;
-  });
+    cartProElements.forEach((cartItem) => {
+      const productId = cartItem.getAttribute("data-product-id");
+      const priceElements = cartItem.querySelector(".price"); // Assuming you have a ".price" element for the item price
 
-  // Update the total price display
-  const totalPriceElement = document.getElementById("totalPrice"); // Assuming you have an element with this ID
-  const sumElement = document.getElementById("sum"); // Assuming you have an element with this ID
-  if (totalPriceElement) {
-    totalPriceElement.innerText = `Total Price: ₹${totalPrice}`;
-    sumElement.innerText = `${totalPrice}`;
+      const quantityInput = numInputsArray.find((input) => input.getAttribute("data-product-id") === productId);
+      const price = parseFloat(priceElements.innerText.replace("₹", ""));
+
+      const quantity = parseInt(quantityInput.value);
+      totalPrice += price * quantity;
+    });
+
+    // Update the total price display
+    const totalPriceElement = document.getElementById("totalPrice"); // Assuming you have an element with this ID
+    const sumElement = document.getElementById("sum"); // Assuming you have an element with this ID
+    if (totalPriceElement) {
+      totalPriceElement.innerText = `Total Price: ₹${totalPrice}`;
+      sumElement.innerText = `${totalPrice}`;
+    }
   }
-  }  
- 
 
-  const cartProElements = document.querySelectorAll('.cartPro');
-  const purchase = document.getElementById("purchase") 
+  const cartProElements = document.querySelectorAll(".cartPro");
+  const purchase = document.getElementById("purchase");
 
-  purchase.addEventListener("click",async function(e){
-    e.preventDefault()
+  purchase.addEventListener("click", async function (e) {
+    e.preventDefault();
     const products = [];
     // Iterate over each 'cartPro' element
-    cartProElements.forEach(cartProElement => {
-      const productId = cartProElement.getAttribute('data-product-id');                    // Extract product ID from the 'data-product-id' attribute
-      const productName = cartProElement.querySelector('a.nav-link').textContent;         // Extract product name from the anchor tag text
-      const productQuantity =  numInputsArray.find((input )=> input.getAttribute("data-product-id") === productId).value;
-    
+    cartProElements.forEach((cartProElement) => {
+      const productId = cartProElement.getAttribute("data-product-id"); // Extract product ID from the 'data-product-id' attribute
+      const productName = cartProElement.querySelector("a.nav-link").textContent; // Extract product name from the anchor tag text
+      const productQuantity = numInputsArray.find((input) => input.getAttribute("data-product-id") === productId).value;
+
       // Push the product information to the 'products' array
       products.push({
         productId,
         productName,
-        productQuantity
+        productQuantity,
       });
     });
 
     const body = JSON.stringify(products);
 
-       const response = await fetch("/updateCart",{method:"POST", headers: {
-      "Content-Type": "application/json",           // Set the content type to JSON
-    },body:body});
+    const response = await fetch("/updateCart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Set the content type to JSON
+      },
+      body: body,
+    });
 
-    if(response.ok){
-      calculateTotalPrice()
-      location.href = "/checkOutPage"
+    if (response.ok) {
+      calculateTotalPrice();
+      location.href = "/checkOutPage";
     }
-  })
-
-  </script>
+  });
+</script>

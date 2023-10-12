@@ -226,14 +226,18 @@
       if(response.ok){
         const data = await response.json()
         document.getElementById("couponPrice").innerHTML=`₹ ${data.couponValue}`
-        document.getElementById("temp").innerHTML=`(₹${data.amount}) `
+        document.getElementById("temp").innerHTML=`(-₹${data.couponValue}) `
+        // document.getElementById("temp").innerHTML=`(₹${data.amount}) `
         msg.innerHTML ="coupon added"
         AMOUNT = data.amount;
         COUPON_NAME = name;
       }else{
         const data = await response.json()
         document.getElementById("temp").innerHTML=` `
+        document.getElementById("couponPrice").innerHTML=`₹ 0`
         console.log(data)
+        AMOUNT = undefined;
+        COUPON_NAME = undefined;
         msg.innerHTML ="not change"
         
       }
