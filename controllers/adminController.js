@@ -10,6 +10,7 @@ const userModel = require("../model/userModel");
 const { CompositionContextImpl } = require("twilio/lib/rest/video/v1/composition");
 const orderModel = require("../model/orderModel");
 const couponModel = require("../model/couponModel")
+const easyinvoice = require("easyinvoice")
 
 
 function createToken(email, status){
@@ -539,5 +540,320 @@ exports.removeCoupon = async (req,res)=>{
     }
 }
 
+
+// graph 
+
+exports.graph = async (req,res)=>{
+    try {
+        if(req.body.report === "year"){
+            // const targetdata  = parseInt(req.body.year);
+            const targetdata  = req.body.year;
+
+            console.log(targetdata)
+            
+            const data = await orderModel.aggregate([{
+                $match:{
+                    createdAt:{
+                        $gte:new Date(targetdata,0,1),
+                        $lt:new Date(targetdata+1,0,1)
+                    }
+                }
+            },
+            {
+                $group:{
+                    _id:"$status",
+                    count:{$sum:1}
+                }
+            },
+            {
+                $project:{
+                    _id:0,
+                    labels:"$_id",
+                    data:"$count"
+                }
+            }
+            ])
+
+            console.log(data);
+            res.json(data)
+        }else if(req.body.report === "month"){
+            let  [year,month] = req.body.month.split("-")
+            console.log(year);
+            console.log(month);
+            console.log("affer the month")
+            const data = await orderModel.aggregate([
+                { 
+                    $match:{
+                        createdAt:{
+                            $gte : new Date(year,month-1,1),
+                            $lt : new Date(year,month,1),
+                        }
+                }
+                },
+                {
+                   $group:{
+                    _id:"$status",
+                    count:{ $sum:1}
+                   } 
+                },
+                {
+                    $project:{
+                       _id:0,
+                       labels:"$_id",
+                       data:"$count" 
+                    }
+                }
+
+            ])
+            console.log(data)
+            res.json(data)
+        }else if(req.body.report === "daily"){
+            let today = req.body.today;
+            let data = await orderModel.aggregate([
+                {
+                        $match:{
+                        createdAt :{
+                            $gte: new Date(today),
+                            $lt: new Date(today+'T23:59:59.999Z')
+                        }
+                    }
+                }
+                ,{
+                    $group:{
+                        _id:"$status",
+                        count:{$sum:1}
+                    }
+                },{
+                    $project:{
+                        _id:0,
+                        labels:"$_id",
+                        data:"$count"
+                    }
+                }
+            ])
+            res.json(data)
+        }else{
+            let data ={};
+            res.json(data);
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+exports.revenu = async (req,res)=>{
+    try {
+        const orderData = await orderModel.find()
+        let data = {
+            "images": {
+                // The logo on top of your invoice
+                "logo": "https://public.easyinvoice.cloud/img/logo_en_original.png",
+                // The invoice background
+                "background": "https://public.easyinvoice.cloud/img/watermark-draft.jpg"
+            },
+            // Your own data
+            "sender": {
+                "company": "petStop",
+                "address": "Sample Street 123",
+                "zip": "1234 AB",
+                "city": "Sampletown",
+                "country": "Kerala"
+            },
+            // Your recipient
+            "client": {
+                "company": " ",
+                "address": " ",
+                "zip": " ",
+                "city":" ",
+                "country":" "
+            },
+            "information": {
+                // Invoice number
+                "number": "2021.0001",
+                // Invoice data
+                "date": new Date(),
+                // Invoice due date
+                // "due-date": "31-12-2021"
+            },
+            // The products you would like to see on your invoice
+            // Total values are being calculated automatically
+            "products": [
+                {
+                    "quantity": 1,
+                    "description": "Product 1",
+                    "tax-rate": 0,
+                    "price": 33.87
+                },
+            ],
+            // The message you would like to display on the bottom of your invoice
+            "bottom-notice": `Kindly pay your invoice within 15 days. <br> disc`,
+            // Settings to customize your invoice
+            "settings": {
+                "currency": "INR", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
+            },
+            
+        };
+        orderData.forEach(item =>{
+            if(item.products && item.products.length > 0){
+                item.products.forEach(product =>{
+                    data.products.push({
+                        "quantity": product.quantity,
+                        "description": product.p_name,
+                        "tax-rate": " ",
+                        "price": product.price
+                    })
+                })
+            }
+            
+        })
+
+        const result = await easyinvoice.createInvoice(data);
+        const pdfBuffer = Buffer.from(result.pdf, 'base64');
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
+        res.send(pdfBuffer);
+        // res.json(data)
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+exports.adminPDF = async (req,res)=>{
+    try {
+
+        async function genreate(info){
+            let data = {
+                "images": {
+                    // The logo on top of your invoice
+                    "logo": "https://public.easyinvoice.cloud/img/logo_en_original.png",
+                    // The invoice background
+                    "background": "https://public.easyinvoice.cloud/img/watermark-draft.jpg"
+                },
+                // Your own data
+                "sender": {
+                    "company": "petStop",
+                    "address": "Sample Street 123",
+                    "zip": "1234 AB",
+                    "city": "Sampletown",
+                    "country": "Kerala"
+                },
+                // Your recipient
+                "client": {
+                    "company": " ",
+                    "address": " ",
+                    "zip": " ",
+                    "city":" ",
+                    "country":" "
+                },
+                "information": {
+                    // Invoice number
+                    "number": "2021.0001",
+                    // Invoice data
+                    "date": new Date(),
+                    // Invoice due date
+                    // "due-date": "31-12-2021"
+                },
+                // The products you would like to see on your invoice
+                // Total values are being calculated automatically
+                "products": [],
+                // The message you would like to display on the bottom of your invoice
+                "bottom-notice": `Kindly pay your invoice within 15 days. <br> disc`,
+                // Settings to customize your invoice
+                "settings": {
+                    "currency": "INR", // See documentation 'Locales and Currency' for more info. Leave empty for no currency.
+                },
+                
+            };
+           
+            info.forEach(product =>{
+                if(product.products){
+                    product.products.forEach(products =>{
+
+                        data.products.push({
+                            quantity:products.quantity,
+                            description:products.p_name,
+                            "tax-rate": 0,
+                            price:products.realPrice,
+                        })
+                    })
+
+                }
+            })
+            return data;
+            
+        }
+        console.log(req.body)
+        console.log("here in teh pdf")
+        if(req.body.report === "year"){
+            const year = req.body.year;
+            const info = await orderModel.aggregate([
+                {
+                    $match:{
+                        createdAt :{
+                            $gte: new Date(year,0,1),
+                            $lt: new Date(year+1,0,1)
+                        }
+                    }
+
+                }
+            ])
+            let data = await genreate(info);
+            // res.json(data)
+            console.log(data)
+            const result = await easyinvoice.createInvoice(data);
+            const pdfBuffer = Buffer.from(result.pdf, 'base64');
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
+            // // res.send(pdfBuffer);
+            res.end(pdfBuffer);
+        }else if(req.body.report === "month"){
+            const [year,month] =   req.body.month.split("-");
+            const info = await orderModel.aggregate([
+                {
+                    $match:{
+                        createdAt:{
+                            $gte : new Date(year,month-1,1),
+                            $lt : new Date(year,month,1),
+                        }
+                    }
+                }
+            ])
+        
+            let data = await genreate(info);
+            const result = await easyinvoice.createInvoice(data);
+            const pdfBuffer = Buffer.from(result.pdf, 'base64');
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
+            res.end(pdfBuffer);
+        }else if(req.body.report === "daily"){
+            console.log("daily")
+            const today = req.body.today;
+            const info  = await orderModel.aggregate([
+                {
+                    $match:{
+                        createdAt:{
+                            $gt: new Date(today),
+                            $lt: new Date(today+'T23:59:59.999Z')
+                        }
+                    }   
+                }
+            ])
+            let data = await genreate(info);
+           
+
+            const result = await easyinvoice.createInvoice(data);
+            const pdfBuffer = Buffer.from(result.pdf, 'base64');
+            res.setHeader('Content-Type', 'application/pdf');
+            res.setHeader('Content-Disposition', 'attachment; filename=Report.pdf');
+            res.end(pdfBuffer);
+        }else{
+            res.status(300);
+        }
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
 
 

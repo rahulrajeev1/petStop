@@ -1,4 +1,15 @@
 <%- include("../layouts/adminhead") %>
+<style>
+    .card {
+    border-radius: 5px;
+    -webkit-box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+    box-shadow: 0 1px 2.94px 0.06px rgba(4,26,55,0.16);
+    border: none;
+    margin-bottom: 30px;
+    -webkit-transition: all 0.3s ease-in-out;
+    transition: all 0.3s ease-in-out;
+}
+</style>
 
 
 <div id="wrapper" style="background-color: slategrey;">
@@ -14,10 +25,12 @@
         
                 <div class="col-xl-10 col-lg-10 col-md-9  ">
         
-                    <div class="card o-hidden border-0 shadow-lg my-5" >
+                    <div class="card o-hidden border-3 shadow-lg my-5  " >
+                       
+                        
                         <center>
-                        <div  style="height: 20rem; width: 17rem;background-color: rgb(243, 179, 179);" class="card-body p-0 my-3 rounded border  border-success">
-                                <center><h3 class="mt-5" style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;background-color: rgb(182, 182, 182);"><i class="fa-solid fa-wallet"></i> Wallet</h3></center>
+                        <div  style="height: max-content; width: 17rem; border: 1px solid blue; background: linear-gradient(45deg,#FF5370,#ff869a);   font-size: 26px;" class="card-body p-0 my-3 rounded border  shadow-0 ">
+                                <h1 class="mt-5 text-right" style="font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;"><i class="fa fa-credit-card f-left"></i><span>Wallet</span></h1>
                                 <h4 class="mt-5">₹ <%= wallet %></h4>
                                 
                             </div>

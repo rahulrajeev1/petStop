@@ -115,7 +115,7 @@
       </div>
     </div>
   </section>
-
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.12.15/dist/sweetalert2.all.min.js"></script>  
 <script>
     function changeImg(imageSrc){
         let mainImg = document.getElementById("mainImg");
@@ -151,6 +151,8 @@
 
           if(response.ok){
             console.log("product added to cart");
+            swal("added to cart", "You clicked the button!", "success");  
+
           }else{
             console.log("error adding product to cart");
           }

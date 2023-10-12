@@ -36,7 +36,7 @@ const storage = multer.diskStorage({
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
       cb(null, uniqueSuffix + '-' + file.originalname); // Unique filename for each uploaded image
     }
-  });
+  }); 
 const banners = multer({storage: banner});
 
  module.exports = {store,banners};

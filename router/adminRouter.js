@@ -34,13 +34,19 @@ router.post("/editUser/:id",adminController.editUser_post)
 router.post("/searchUser",adminController.userSearch)
 
 
-router.get("/order",adminController.orderList)
+router.get("/order",authenticateAdmin,adminController.orderList)
 router.post("/orderInformartion",adminController.orderDetails)
 router.put("/orderUpdate/:id",adminController.updateOrder)
 
-router.get('/viewCoupon',adminController.couponGet)
-router.get("/getCouponAdd",adminController.addCouponGet)
+router.get('/viewCoupon',authenticateAdmin,adminController.couponGet)
+router.get("/getCouponAdd",authenticateAdmin,adminController.addCouponGet)
 router.post("/couponDelete/:id",adminController.deleteCoupon);
 router.post("/addCoupon",adminController.addCoupon)
+
+//graph
+
+router.post("/graph",adminController.graph)
+router.get("/revenu",adminController.revenu)
+router.post("/adminPdf",adminController.adminPDF)
 module.exports = router;
 

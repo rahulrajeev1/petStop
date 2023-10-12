@@ -39,6 +39,7 @@ exports.checkUserBlocked= async(req, res, next)=> {
 }
 
 
+
 exports.isNotLogged = async function(req, res, next){
     if(is_user_awaiting_otp(req)){
         return res.redirect('/get_otp_page');

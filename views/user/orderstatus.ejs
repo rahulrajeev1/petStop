@@ -48,7 +48,7 @@
                                             </div>
                                             <div >
                                                 <span class="badge rounded-pill bg-primary ">
-                                                    <a class="text-decoration-none text-white" href="/profile/invoice?id=<%=order.map(item=>item._id)%>"><span class="text">Invoice</span></a>
+                                                    <a class="text-decoration-none text-white"  href="/invoice/<%=order.map(item=>item._id)%>" ><span class="text">Invoice</span></a>
                                                 </span>
                                             </div>
                                         </div>
@@ -142,6 +142,8 @@
                                         <button class="btn btn-success" style="width: 100%; border-radius: 10px;font-size: 13px;">Order Again</button>
                                      </form>
                                     <%}%>
+                                    <!-- <button onclick="invocie('<=order.map(item=>item._id)%>')">buttoine</button>
+                                    <=order.map(item=>item._id)%> -->
                                 </div>
                             </div>
                         </div>
@@ -151,5 +153,35 @@
         </div>
     </div>
 </div>
+<script src="https://unpkg.com/easyinvoice/dist/easyinvoice.min.js"></script>
+<script>
 
+    async function invocie(id){
+        const response = await fetch(`/invoice/${id}`,{method:"GET"})
+        
+        if(response.ok){
+            try {
+
+
+
+            // Generate the invoice
+          
+                easyinvoice.createInvoice(data, function (result) {
+                    console.log(result)
+                    easyinvoice.download('invoice.pdf', result.pdf);
+                });
+                
+                console.error("Error generating invoice:", error);
+               
+            console.log("hereo")
+           
+            } catch (error) {
+                console.log(error.message)
+            }
+            
+        }
+
+    }
+   
+</script>
 <%- include("../layouts/profilefooter.ejs") %>
