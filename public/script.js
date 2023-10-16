@@ -4,7 +4,7 @@ document.getElementById("form").addEventListener('submit',(e)=>{
     console.log("trdt")
     e.preventDefault();
     const formData = new FormData(e.target);
-    fetch("http://localhost:3001/admin/addProduct",{
+    fetch("http://16.171.193.157:3001//admin/addProduct",{
         method:"post",
         body:formData,
     }).then((response)=>{
