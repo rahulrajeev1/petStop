@@ -11,6 +11,10 @@ const { CompositionContextImpl } = require("twilio/lib/rest/video/v1/composition
 const orderModel = require("../model/orderModel");
 const couponModel = require("../model/couponModel")
 const easyinvoice = require("easyinvoice")
+const Excel = require("exceljs");
+const { ExportListInstance } = require("twilio/lib/rest/bulkexports/v1/export");
+
+
 
 
 function createToken(email, status){
@@ -641,6 +645,109 @@ exports.graph = async (req,res)=>{
     }
 }
 
+exports.newToday = async (req,res)=>{
+    try {
+        const order = await orderModel.aggregate([
+            {
+                $match:{
+                    createdAt:{
+                        $gte: new Date(new Date().setHours(0, 0, 0, 0)),
+                         $lt: new Date(new Date().setHours(24, 0, 0, 0))
+                    }
+                }
+            },{
+                $group:{
+                    _id:"$status",
+                    count:{$sum:1}
+                }
+            },{
+                $project:{
+                    _id:0,
+                    labels:"$_id",
+                    data:"$count"
+                }
+            }
+        ]);
+
+        res.json(order)
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+ 
+exports.graghYearRev = async(req,res)=>{
+    try {
+        const order = await orderModel.aggregate([
+         {
+            $match:{
+                createdAt:{
+
+                    $gte : new Date(2023,0,1),
+                    $lt:new Date(2024,0,1)           
+                }
+            }
+         },
+         {
+            $unwind: "$products" // Unwind the products array
+        },
+         {
+             $group:{
+                 _id:"$products.p_name",
+                 count:{$sum:1}
+             }
+         },{
+            $project:{
+                _id:0,
+                data:"$count",
+                labels:"$_id"
+            }
+         }
+        ])
+      
+        res.json(order)
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+exports.graphRevenu = async (req,res)=>{
+    try {
+        const data = await orderModel.aggregate([
+            {
+                $match:{
+                    createdAt:{
+                        $gte : new Date(2023,0,1),
+                        $lt:new Date(2024,0,1)    
+                    }
+                }
+            },
+            {
+                $unwind:"$products"
+            },
+            {  
+              $group:{
+                // _id:"$products.realPrice",
+                _id:"$createdAt",
+                sum: { $sum: { $toDouble: "$products.realPrice" } }
+              }   
+            },
+            {
+                $project:{
+                    _id:0,
+                    data:"$sum",
+                    labels:"$_id" 
+                }
+            }
+        ])
+        
+        res.json(data)
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+
+
 exports.revenu = async (req,res)=>{
     try {
         const orderData = await orderModel.find()
@@ -856,4 +963,35 @@ exports.adminPDF = async (req,res)=>{
     }
 }
 
+
+// npm 
+exports.excel  = async (req,res) =>{
+    console.log("excel")
+    let workbook = new Excel.Workbook();
+    const workSheet = workbook.addWorksheet("products");
+    workSheet.addRow(['orderID','Product','Quantity',"Price"]);
+
+    const orderData = await orderModel.find();
+    orderData.forEach((order) =>{
+        order.products.forEach((order,index )=> {
+            workSheet.addRow([order._id,order.p_name,order.quantity,order.realPrice])
+        })
+    })
+
+    var fileName = 'FileName.xlsx';
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+
+     await workbook.xlsx.write(res);
+
+    res.end(); 
+    // workbook.xlsx.writeFile(filename)
+    // .then(function (){
+    //     console.log("excel is working ")
+    // })
+    // .catch(function(error){
+    //     console.log("error create Excel file",error);
+    // })
+}
 

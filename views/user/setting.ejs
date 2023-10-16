@@ -12,8 +12,10 @@
             <div class="card shadow mb-4">
                 <div class="container p-4">
                     <div class="row">
-                        <dt class="col-3">Name:</dt>
-                        <dd class="col-9"><%= userData.name %></dd>
+                        <dt class="col-3">Refferal Id</dt>
+                        <dd class="col-9"> <%= userData.uuid %> </dd>
+                        <dt class="col-3"> Name: </dt>
+                        <dd class="col-9"> <%= userData.name %> </dd>
             
                         <dt class="col-3">Email:</dt>
                         <dd class="col-9"><%= userData.email %></dd>
@@ -50,7 +52,7 @@
                                 </div>
                                 <div class="px-3 py-3">
                                     <a href="/editAddress/<%=element._id%>" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm"><i
-                                        class="fas fa-download fa-sm text-white-50"></i>  edit</a>
+                                        class="fas fa-download fa-sm text-white-50"></i> edit </a>
                                 </div>
                             </div>
                             <% }) %>

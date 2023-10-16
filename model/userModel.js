@@ -11,6 +11,12 @@ let userSchema = new mongoose.Schema({
         required:true,
         unique:true,
     },
+    refferalId:{
+        type:String
+    },
+    uuid:{
+        type:String,
+    },
     mobile:{
         type:String,
         required:true,

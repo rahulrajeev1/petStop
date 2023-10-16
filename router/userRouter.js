@@ -21,7 +21,7 @@ router.delete("/cartRemove/:id",parser,userController.removeCart)
 
 router.get("/userProfile",userController.profilePageGet);
 router.post("/addAddress",parser,userController.addNewAddress);
-router.get("/editAddress/:id",isNotLogged,userController.editAddress);
+router.get("/editAddress/:id",userController.editAddress);
 router.post("/editAddress/:id",userController.editAddress_Post)
 router.post("/resetpassword",userController.resetPassword)
 router.post("/otp-resetPassword",userController.resetPasswordOtp)
@@ -38,7 +38,7 @@ router.post("/orderCancel/:id",userController.orderCancel)
 router.post("/singleProductCheckOut/:id",userController.singleProductBuyCheckOut)
 router.post("/singleOrderPost/:id",userController.singleProductOrderPost)
 router.post("/proflieEdit",userController.updateProfilePost)
-router.get("/proflieEdit",isNotLogged,userController.updateProfileGet)
+router.get("/proflieEdit",userController.updateProfileGet)
 router.post("/success/:id",userController.success)
 router.post("/successCart",userController.successCart)
 //wallet

@@ -30,7 +30,7 @@
                                             <div class="error text-danger" style="background-color: rgb(244, 241, 238); border-radius: 5px; font-size: 15px;"></div>
                                     </div>
                                     <div class="col-sm-6">
-                                        <input type="tel" name="mobile" class="form-control form-control-user" id="mobile"
+                                        <input type="number" name="mobile" class="form-control form-control-user" id="mobile"
                                             placeholder="Phone number" required />
                                         <div class="error text-danger" style="background-color: rgb(244, 241, 238); border-radius: 5px; font-size: 15px;"></div>
                                     </div>
@@ -51,6 +51,11 @@
                                             id="cpassword" placeholder="Repeat Password">
                                         <div class="error text-danger" style="background-color: rgb(244, 241, 238); border-radius: 5px; font-size: 15px;"></div>
                                     </div>
+                                </div>
+                                <div class="">
+                                    <input type="text" name="refferalId" class="form-control form-control-user"
+                                        id="refferalId" placeholder="optional">
+                                    <div class="error text-danger" style="background-color: rgb(244, 241, 238); border-radius: 5px; font-size: 15px;"></div>
                                 </div>
                                 <hr>
                                 <button type="button" class="btn btn-primary btn-user btn-block" onclick="validateInputs()">Submit</button>
@@ -76,6 +81,7 @@
         const mobile = document.querySelector("#mobile");
         const password = document.querySelector("#password");
         const cpassword = document.querySelector("#cpassword");
+        const refferalId = document.querySelector("#refferalId")
         form.addEventListener("submit", (e) => {
     if (!validateInputs()) {
       e.preventDefault();
@@ -89,6 +95,7 @@
             const mobileVal = mobile.value.trim();
             const passwordVal = password.value.trim();
             const cpasswordVal = cpassword.value.trim();
+            const refferalIdVal = refferalId.value.trim();
 
             let success = true;
 

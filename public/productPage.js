@@ -49,7 +49,7 @@ function card(data){
         <div class="card-body">
             <p class="card-title text-truncate"><small>${data.Name}</small></p>
             <p><sup><strong>₹</strong></sup>${data.Price}</p>
-            <a href="/singleViewProduct/${data._id}" class="btn btn-primary">Go somewhere</a>
+            <a href="/singleViewProduct/${data._id}" class="btn btn-primary">show</a>
         </div>
         </div>
     `;

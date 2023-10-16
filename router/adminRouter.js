@@ -46,7 +46,11 @@ router.post("/addCoupon",adminController.addCoupon)
 //graph
 
 router.post("/graph",adminController.graph)
+router.get("/allRevenuGraph",adminController.graphRevenu)
+router.get("/newToday",adminController.newToday)
+router.get('/graphrevnu',adminController.graghYearRev)
 router.get("/revenu",adminController.revenu)
 router.post("/adminPdf",adminController.adminPDF)
+router.get('/excel',adminController.excel)
 module.exports = router;
 

@@ -14,6 +14,7 @@ const { NetworkContextImpl } = require("twilio/lib/rest/supersim/v1/network");
 const Razorpay = require("razorpay");
 const couponModel = require("../model/couponModel");
 const { KEYID, KEY_SECRET } = process.env;
+const {v4 : uuidv4} = require("uuid");
 
 let razorpayInstance = new Razorpay({
   key_id: KEYID,
@@ -31,7 +32,7 @@ function createToken(userDetails, status) {
 }
 
 exports.getUserHome = async (req, res) => {
-  const product = await productModel.find().limit(5);
+  const product = await productModel.find().limit(5).populate("Category");
   const logined = req.userDetails; // setting form middleware
   res.render("user/userPage.ejs", { product, logined });
 };
@@ -45,11 +46,13 @@ exports.regester_post = async (req, res) => {
     const anyOne = await userModel.findOne({ email: req.body.email });
     const entrie = 1;
     if (!anyOne) {
+      console.log(req.body)
       const user = await userModel.create({
         name: req.body.name,
         email: req.body.email,
         mobile: req.body.mobile,
         password: req.body.password,
+        refferalId:req.body.refferalId,
       });
       const randome = Math.floor(Math.random() * 9000) + 1000;
 
@@ -62,7 +65,6 @@ exports.regester_post = async (req, res) => {
 
       // twilioFunction(randome);   //testing mean
 
-      console.log("here 2");
       res.redirect("/get_otp_page");
     } else {
       // error handling
@@ -88,30 +90,54 @@ exports.otpregisterValidation = async (req, res) => {
     const num4 = req.body.num_4;
     const code = parseInt(num1 + num2 + num3 + num4);
 
+
     const foundOtp = await otpModel.findOneAndDelete({ number: code });
+    if(!foundOtp){
+      await userModel.findByIdAndDelete(req.userDetails._id);
+      res.clearCookie("userToken");
+      return res.redirect("/register");
+    }
 
     const { userDetails } = req;
-    console.log(userDetails);
-    const userId = userDetails._id;
-    console.log(userId);
+    const refferalUser = await userModel.findOne({uuid:userDetails.refferalId})
+    console.log(refferalUser)
 
-    const updatedUser = await userModel.findByIdAndUpdate(userId, { $set: { isVerified: true } }, { new: true });
+    if(refferalUser){
+      let remining  = refferalUser.balance
+      const bal = remining+40;
+      let wallet1 ={
+        date: new Date(),
+        amount: bal,
+        receipts: 40,
+      }
+      refferalUser.wallet.push(wallet1);
+      refferalUser.balance = bal;
+      await refferalUser.save();
+
+      const user = await userModel.findOne({_id:userDetails._id});
+      let val = user.balance;
+      const balance = 10 + val;
+
+      const wallet = {
+        date: new Date(),
+        amount: balance,
+        receipts: 10,
+      };
+      user.wallet.push(wallet);
+      user.balance = balance;
+      await user.save();
+    }
+
+    const uuid = uuidv4();
+    const userId = userDetails._id;
+
+    const updatedUser = await userModel.findByIdAndUpdate(userId, { $set: { isVerified: true, uuid:uuid } }, { new: true });
     console.log(updatedUser);
     const jwtToken = createToken(updatedUser, "logged");
     req.user = updatedUser;
     res.cookie("userToken", jwtToken);
     res.redirect("/");
 
-    // console.log("enterd code"+code);
-
-    // if(foundOtp){
-    //     const succ = "Successfully Created Your Account";
-    //     // await userModel.create()
-    //     res.rediract("/")
-    // }else{
-
-    //     res.render("user/register",{fail: "Please Check Your OTP"})
-    // }
   } catch (error) {
     console.log(error);
     const message = error.message;
@@ -231,6 +257,7 @@ exports.cart_get = async (req, res) => {
 exports.addToCart_post = async (req, res) => {
   try {
     const id = req.params.id;
+    if(!req.userDetails) return res.status(300).json("not logged ")
     const userData = await userModel.findOne({ _id: req.userDetails._id });
     const cartItems = userData.cart.items;
     const existingCartItems = cartItems.find((item) => item.productId.toString() === id);
@@ -1045,6 +1072,8 @@ exports.orderCancel = async (req, res) => {
       {
         $set: {
           orderCancleRequest: true,
+          status:"Cancelled"
+
         },
       }
     );
