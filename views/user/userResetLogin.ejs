@@ -42,10 +42,58 @@
               </div>
             </div>
           </section>
+
+          <div id="OTP" style="display:none;"> 
+            <div  class="container-fluid d-flex justify-content-center align-items-center " >
+              <div class="container col-lg-4 d-flex flex-column justify-content-center align-items-center rounded-5 p-5 bg-white CardOTP" style="display: none;" >
+                  
+                  <span>Enter OTP Code</span>
+                
+                          <form id="otpForm" method="post" class="d-flex flex-column align-items-center">
+                              <div style="display: flex;">
+                                  <input class="code" type="text" placeholder="0" min="0" max="9"  style="width: 55px;" name="num_1" required maxlength="1">
+                                  <input class="code" type="text" placeholder="0" min="0" max="9" name="num_2"style="width: 50px;" required maxlength="1">
+                                  <input class="code" type="text" placeholder="0" min="0" max="9" name="num_3" style="width: 50px;" required maxlength="1">
+                                  <input class="code" type="text" placeholder="0" min="0" max="9" name="num_4" style="width: 50px;"required maxlength="1">
+                              </div>
+                              <button class="btn mt-2 text-white" id="otp-btn" type="submit">validate</button>
+                          </form>
         
+                  <span class="mt-2 fs-5" id="time"></span>
+                  <div id="timer" class="OTPtext mt-2" style="display:none">Don’t get the code?<a class="text-danger text-decoration-none" href="/login">Resent</a></div>
+              </div>
+          </div>
+        
+        </div>
+
       </section>
 
-      <script>
+
+      <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+      swal("Hello world!");
+        // const inputs = document.querySelectorAll('.code');
+        // for (let i = 0; i < inputs.length; i++) {
+        //     inputs[i].addEventListener('input', function() {
+        //         if (this.value.length === this.maxLength) {
+        //             inputs[i + 1].focus();
+        //         }
+        //     });
+        // }
+    
+        // let timeLeft = 59;
+        // const Counter = document.getElementById('time');
+        // const timerId = setInterval(countdown, 1000);
+    
+        // function countdown() {
+        //     const text = document.getElementById("timer");
+        //     if (timeLeft == -1) {
+        //         text.style.display = "inline-block";
+        //     } else {
+        //         Counter.innerHTML = '00 :' + " " + timeLeft;
+        //         timeLeft--;
+        //     }
+        // }
          const addressPost = document.getElementById("resetFrom");
          const emailMessage = document.getElementById("passwordMessage");
         // emailId.addEventListener("input", (e)=>{
@@ -63,7 +111,7 @@
                 // addressPost.action ="/loginResetPassword",
                 // addressPost.method ="POST",
                 // addressPost.submit()
-                const body = {
+                const body = { 
                     password:password,
                     email:email
                 }
@@ -72,7 +120,33 @@
                 },body:JSON.stringify(body)})
 
                 if(response.ok){
-                    location.href = "/login";
+                  
+                    document.querySelector("#OTP").style.display ="block"
+                    const inputs = document.querySelectorAll('.code');
+                    for (let i = 0; i < inputs.length; i++) {
+                        inputs[i].addEventListener('input', function() {
+                            if (this.value.length === this.maxLength) {
+                                inputs[i + 1].focus();
+                            }
+                        });
+                    }
+                
+                    let timeLeft = 59;
+                    const Counter = document.getElementById('time');
+                    const timerId = setInterval(countdown, 1000);
+                
+                    function countdown() {
+                        const text = document.getElementById("timer");
+                        if (timeLeft == -1) {
+                            text.style.display = "inline-block";
+                        } else {
+                            Counter.innerHTML = '00 :' + " " + timeLeft;
+                            timeLeft--;
+                        }
+                    }
+                    setTimeout(function () {
+                      document.querySelector("#OTP").style.display ="none"
+                  }, 60000);
                 }else{
                     showDynamicAlert("email is not exsist");
                 }
@@ -99,6 +173,43 @@
                 }  
               } 
     })
+
+    document.getElementById("otpForm").addEventListener("submit",async (e) =>{
+      e.preventDefault();
+      const info = new FormData(document.getElementById("otpForm"));
+      // console.log(info.get("num_1"))
+      let data = {};
+     info.forEach((key,value)=>{
+      data[value] = key
+     })
+    
+     data["email"] = addressPost.querySelector('[name="email"]').value
+     data["password"] = addressPost.querySelector('[name = "password"]').value;
+      console.log(data)
+      const response = await fetch("/forgetPassword",{method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify(data)
+        })
+
+        if(response.ok){
+          swal("Password changed")
+                    .then((value) => {
+                      
+                      location.href = "/login";
+                    });
+        }else{
+          swal({
+              title: "Oop!",
+              text: "not validee the otp!",
+              icon: "error",
+              button: "ok",
+            });
+        }
+      })
+        
+        
 
 
       </script>

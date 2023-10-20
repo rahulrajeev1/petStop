@@ -191,8 +191,15 @@ exports.loginResetPasswordPost = async (req, res) => {
     const email = req.body.email;
     const user = await userModel.findOne({ email: email });
     if (user) {
-      user.password = req.body.password;
-      await user.save();
+      const randome = Math.floor(Math.random() * 9000) + 1000;
+
+      const newOtp = await otpModel.create({
+        number: randome,
+      });
+      await newOtp.save();
+      sendEmail(newOtp);
+      console.log(newOtp);
+
       res.status(200).json("set");
     } else {
       res.status(300).json("not exist");
@@ -201,6 +208,31 @@ exports.loginResetPasswordPost = async (req, res) => {
     console.log(error.message);
   }
 };
+
+exports.forgetPasswordOtp = async (req,res)=>{
+  try {
+    const num1 = req.body.num_1;
+    const num2 = req.body.num_2;
+    const num3 = req.body.num_3;
+    const num4 = req.body.num_4;
+    const code = parseInt(num1 + num2 + num3 + num4);
+    console.log(code)
+
+    const foundOtp = await otpModel.findOneAndDelete({ number: code });
+    if(!foundOtp){
+      return res.status(300).json("not such a  otp")
+    }else{
+      console.log(req.body)
+      let user = await userModel.findOne({ email:req.body.email});
+      user.password = req.body.password;
+      user.save();
+      return res.status(200).json("valide")
+    }
+    
+  } catch (error) {
+    console.log(error.message)
+  }
+}
 
 exports.getSingleProductview = async (req, res) => {
   try {

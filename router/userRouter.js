@@ -28,6 +28,7 @@ router.post("/otp-resetPassword",userController.resetPasswordOtp)
 router.post("/setPassword",userController.settingPasswordPost)
 router.get('/loginResetPassword',userController.loginResetPasswordGet)
 router.post("/loginResetPasswordPost",userController.loginResetPasswordPost);
+router.post("/forgetPassword",userController.forgetPasswordOtp)
 
 router.get("/checkOutPage",userController.checkOutPage);
 router.get("/orderPage",userController.orderPageView);

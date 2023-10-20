@@ -44,7 +44,7 @@ function card(data){
     cardDiv.innerHTML = `
     <div class= "card my-2 mt-2" style = "width: 12rem; ">
          <a href="/singleViewProduct/${data._id}">
-        <img src="/productsImg/${data.Image[0]}" class="card-img-top"  " alt="${data.title}">
+        <img width="90" height="250" src="/productsImg/${data.Image[0]}" class="card-img-top"  " alt="${data.title}">
         </a>
         <div class="card-body">
             <p class="card-title text-truncate"><small>${data.Name}</small></p>
@@ -101,18 +101,24 @@ function setFilters (name){
     setFilter.innerHTML= ' ';
   
     setFilter.innerHTML =` 
+    
     <div class="form-check">
-    <input class="form-check-input" type="radio" identify="${name}" name="filter" value="first">                      
-        <span> 100-1000</span>
+
+    <input class="form-check-input " type="radio" identify="${name}" name="filter" value="first">                      
+    <label>below 1000</label>
+
     </div>
+
     <div class="form-check">
     <input class="form-check-input" type="radio" identify="${name}" name="filter" value="second" >
-        <span>1000-2000</span>
+        <label>1000-2000</label>
     </div>
+
     <div class="form-check">
     <input class="form-check-input" type="radio" identify="${name}" name="filter" value="third" checked>
-        <span>above</span>
+    <label>above</label>
     </div>
+    
     `
 }
 
