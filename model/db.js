@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const dbConnect =() =>{ 
     mongoose.connect(process.env.DB_URL)
     .then(()=>{ console.log("it is ranning fine")})
-    .catch((e)=>{ console.log("error")});
+    .catch((e)=>{ console.log(e.message)});
 
 }
 

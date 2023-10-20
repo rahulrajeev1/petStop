@@ -4,7 +4,7 @@
 
 const btns = [
     {
-        id:"cat",
+        id:"Cat",
         name:"Cats"
     },
     {
@@ -12,7 +12,7 @@ const btns = [
         name:"Dog"
     },
     {
-        id:"bird",
+        id:"Bird",
         name:"bird"
     },
 ]
