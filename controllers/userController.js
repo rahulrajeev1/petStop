@@ -63,7 +63,7 @@ exports.regester_post = async (req, res) => {
       const jwtToken = createToken(user, "awaiting-otp"); // creating jwt token (the function is declared above)
       res.cookie("userToken", jwtToken); // setting token in user cookie
 
-      // twilioFunction(randome);   //testing mean
+       twilioFunction(randome);   //testing mean
 
       res.redirect("/get_otp_page");
     } else {
