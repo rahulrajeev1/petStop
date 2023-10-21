@@ -7,6 +7,7 @@ exports.parser = async function(req, res, next){
     if(req.cookies.userToken){
         const {userDetails, status} = await jwt.verify(req.cookies.userToken, process.env.JWT_KEY)
         req.userDetails = userDetails
+        // console.log(JSON.stringify(req.userDetails)+"userDetails")
         req.status = status
     }
     next();

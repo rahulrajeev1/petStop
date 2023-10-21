@@ -162,7 +162,7 @@ exports.login_post = async (req, res) => {
     console.log("correct user entered");
     const userData = {
       _id: user._id,
-      eamil: user.email,
+      email: user.email,
     };
 
     // change userDetails
@@ -476,9 +476,13 @@ exports.updateProfilePost = async (req, res) => {
     const email = req.body.email;
     const mobile = req.body.mobile;
     const Name = req.body.name;
-    console.log(req.body);
+    
     const user = await userModel.find({ email: email });
-    console.log(user);
+    // console.log(user.length);
+    // console.log(email === req.userDetails.email +"email")
+    // console.log(email  +"email")
+    // console.log(req.userDetails.email +"email");
+
     if (email == req.userDetails.email) {
       await userModel.findByIdAndUpdate(
         { _id: req.userDetails._id },

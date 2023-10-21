@@ -11,7 +11,8 @@
                   <div class="card rounded-3">
                  
                     <div class="card-body p-4 p-md-5">
-          
+                      <div id="errMes"></div>
+
                       <form class="px-md-2" id="addressFrom" >
           
                         <div class="form-outline mb-4">
@@ -49,7 +50,7 @@
          const addressPost = document.getElementById("addressFrom");
          const phoneNO = document.getElementById("Phone")
          const emailMessage = document.getElementById("emailMessage");
-
+        const errMes = document.getElementById("errMes")
 
         addressPost.addEventListener("submit", async function(e){
             e.preventDefault();
