@@ -71,34 +71,9 @@
 
       <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
-      swal("Hello world!");
-        // const inputs = document.querySelectorAll('.code');
-        // for (let i = 0; i < inputs.length; i++) {
-        //     inputs[i].addEventListener('input', function() {
-        //         if (this.value.length === this.maxLength) {
-        //             inputs[i + 1].focus();
-        //         }
-        //     });
-        // }
-    
-        // let timeLeft = 59;
-        // const Counter = document.getElementById('time');
-        // const timerId = setInterval(countdown, 1000);
-    
-        // function countdown() {
-        //     const text = document.getElementById("timer");
-        //     if (timeLeft == -1) {
-        //         text.style.display = "inline-block";
-        //     } else {
-        //         Counter.innerHTML = '00 :' + " " + timeLeft;
-        //         timeLeft--;
-        //     }
-        // }
+      
          const addressPost = document.getElementById("resetFrom");
          const emailMessage = document.getElementById("passwordMessage");
-        // emailId.addEventListener("input", (e)=>{
-        //     e.target.value = e.target.value.toLowerCase()
-        // })
 
         addressPost.addEventListener("submit", async function(e){
             e.preventDefault();
@@ -108,9 +83,7 @@
             const resetPassword= addressPost.querySelector('[name="resetPassword"]').value;
 
             if(password === resetPassword){
-                // addressPost.action ="/loginResetPassword",
-                // addressPost.method ="POST",
-                // addressPost.submit()
+               
                 const body = { 
                     password:password,
                     email:email
@@ -177,7 +150,6 @@
     document.getElementById("otpForm").addEventListener("submit",async (e) =>{
       e.preventDefault();
       const info = new FormData(document.getElementById("otpForm"));
-      // console.log(info.get("num_1"))
       let data = {};
      info.forEach((key,value)=>{
       data[value] = key
